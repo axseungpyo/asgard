@@ -166,9 +166,7 @@ cat > "$OLYMPUS_HOME/templates/settings.json" << 'EOF'
 EOF
 
 # 설치된 버전 저장
-if [ -f "$OLYMPUS_SRC/../VERSION" ]; then
-    cp "$OLYMPUS_SRC/../VERSION" "$OLYMPUS_HOME/VERSION" 2>/dev/null || true
-elif [ -f "$OLYMPUS_SRC/VERSION" ]; then
+if [ -f "$OLYMPUS_SRC/VERSION" ]; then
     cp "$OLYMPUS_SRC/VERSION" "$OLYMPUS_HOME/VERSION" 2>/dev/null || true
 fi
 

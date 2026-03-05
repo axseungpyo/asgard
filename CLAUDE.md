@@ -98,9 +98,9 @@ Argus (Gemini CLI):
 ## Status Flow
 
 ```
-Athena:       draft -> ready
-Hephaestus:   ready -> in-progress -> review-needed (or blocked)
-Argus:        ready -> in-progress -> review-needed (or blocked)
+Athena:       draft
+Hephaestus:   draft -> in-progress -> review-needed (or blocked)
+Argus:        draft -> in-progress -> review-needed (or blocked)
 Athena:       review-needed -> done (or draft for rework)
 ```
 

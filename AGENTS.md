@@ -1,4 +1,4 @@
-# Olympus Pantheon — Agent Rules
+# Olympus AGENTS — Agent Rules
 
 모든 Hands 에이전트(Hephaestus, Argus)가 읽어야 할 행동 규칙서.
 

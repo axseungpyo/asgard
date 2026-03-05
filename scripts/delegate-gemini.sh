@@ -20,7 +20,7 @@ INPUT_FILE=""
 # ─── TP_ID 파싱 및 검증 (F-02: injection 방지) ───
 TP_ID="${1:?Usage: delegate-gemini.sh TP-NNN [--input image.png]}"
 
-if [[ ! "$TP_ID" =~ ^TP-[0-9]{3,}$ ]]; then
+if [[ ! "$TP_ID" =~ ^TP-[0-9]{3,}(-[a-z]+)?$ ]]; then
     echo "❌ 잘못된 TP_ID 형식: '$TP_ID'"
     echo "   올바른 형식: TP-NNN (예: TP-001, TP-012)"
     exit 1
