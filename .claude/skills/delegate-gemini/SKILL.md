@@ -24,7 +24,7 @@ Argus(Gemini CLI)의 멀티모달 능력이 필요한 작업을 위임한다.
 확인 사항:
 - `artifacts/handoff/TP-NNN.md` 존재 여부
 - `Agent Target`이 `gemini`인지 확인
-- INDEX.md status가 `draft` 또는 `ready`인지 확인
+- INDEX.md status가 `draft`인지 확인
 
 ### Step 2: 입력 파일 확인
 
@@ -52,11 +52,14 @@ status: `draft` -> `in-progress`, Updated: {datetime}
 `scripts/delegate-gemini.sh`를 통해 실행:
 
 ```bash
-# 텍스트/문서 작업
+# 텍스트/문서 분석 작업
 bash scripts/delegate-gemini.sh TP-NNN
 
 # 이미지 입력이 있는 작업
 bash scripts/delegate-gemini.sh TP-NNN --input {image-path}
+
+# 이미지 생성 작업 (출력 디렉토리 지정)
+bash scripts/delegate-gemini.sh TP-NNN --output-dir src/assets/
 ```
 
 실행 중 상태 메시지:
@@ -70,6 +73,7 @@ Argus[{Mode}] 천 개의 눈 활성화: TP-NNN 분석 중...
 - `artifacts/handoff/RP-NNN.md` 존재 확인
 - 없으면: INDEX.md status -> `blocked`
 - 있으면: INDEX.md status -> `review-needed`
+- 이미지 생성 작업인 경우 출력 디렉토리에 파일 확인
 
 ### Step 7: 완료 보고
 
@@ -78,6 +82,29 @@ Argus[{Mode}] 관측 완료: RP-NNN
 
 검토 준비 완료. 다음: /review RP-NNN
 ```
+
+## Watchdog 보호 메커니즘
+
+스크립트에 내장된 안전장치:
+
+| 보호 | 기본값 | 동작 |
+|------|-------|------|
+| 전체 타임아웃 | 300초 (5분) | timeout/gtimeout으로 강제 종료 |
+| 출력 정체 감지 | 60초 무출력 | watchdog이 SIGTERM 전송 |
+| 로그 크기 제한 | 2MB | 초과 시 강제 종료 |
+| 에러 루프 감지 | 동일 에러 3회 | 반복 에러 패턴 시 강제 종료 |
+
+Watchdog이 강제 종료한 경우:
+1. 로그에서 원인 확인: `artifacts/logs/TP-NNN-gemini.log`
+2. INDEX.md status -> `blocked`
+3. 사용자에게 원인 보고
+
+## RP Fallback
+
+Gemini가 RP 파일을 직접 생성하지 못한 경우:
+1. 로그에서 `# RP-NNN` 헤더를 검색하여 RP 추출 시도
+2. 그래도 없으면 전체 로그를 RP 포맷으로 래핑
+3. Athena가 fallback RP를 검토 후 판정
 
 ## 오류 처리
 
@@ -88,12 +115,12 @@ Argus를 찾을 수 없습니다.
 인증: gemini 실행 후 Google 계정 로그인
 ```
 
-**API 할당량 초과 (무료 티어):**
+**Watchdog 강제 종료:**
 ```
-Argus API 할당량 초과. 옵션:
-1. 잠시 후 재시도 (60 req/min, 1000 req/day 한도)
-2. GOOGLE_API_KEY 환경 변수로 유료 전환
-3. 작업을 더 작은 단위로 분할
+가능한 원인:
+1. Gemini API 응답 지연 (네트워크 문제)
+2. 도구 호출 반복 루프 (Gemini 내부 에러)
+3. 작업 범위 초과 (TP를 더 작게 분할 필요)
 ```
 
 **TP Agent Target이 gemini가 아닌 경우:**
