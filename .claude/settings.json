@@ -1,0 +1,24 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import sys,json,datetime,os; d=json.load(sys.stdin); fp=d.get('tool_input',{}).get('file_path',''); is_tp_rp=any(p in fp for p in ['TP-','RP-']); os.makedirs('artifacts/logs',exist_ok=True) if is_tp_rp else None; open('artifacts/logs/execution.log','a').write(datetime.datetime.now().strftime('%Y-%m-%d %H:%M')+' [write] '+fp+'\\n') if is_tp_rp else None\" 2>/dev/null; exit 0"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import sys,json,datetime,os; d=json.load(sys.stdin); cmd=d.get('tool_input',{}).get('command',''); is_agent=any(p in cmd for p in ['codex','gemini','delegate']); os.makedirs('artifacts/logs',exist_ok=True) if is_agent else None; open('artifacts/logs/execution.log','a').write(datetime.datetime.now().strftime('%Y-%m-%d %H:%M')+' [bash] '+cmd[:120]+'\\n') if is_agent else None\" 2>/dev/null; exit 0"
+          }
+        ]
+      }
+    ]
+  }
+}

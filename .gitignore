@@ -1,0 +1,48 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# 프로젝트별 런타임 파일 (olympus new로 생성되는 것들)
+# 이 파일들은 각 프로젝트 고유이므로 Olympus 저장소에 포함하지 않음
+artifacts/handoff/
+artifacts/logs/
+artifacts/research/
+shared/context.md
+src/
+
+# artifacts 구조 파일은 포함 (INDEX.md, DECISIONS.md 등)
+!artifacts/INDEX.md
+!artifacts/plans/DECISIONS.md
+
+# bkit 관련
+docs/.bkit-memory.json
+docs/.pdca-status.json
+.bkit/
+
+# 에디터
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 환경 변수
+.env
+.env.local
+.env.*
+
+# Node.js
+node_modules/
+npm-debug.log*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# 임시 파일
+*.tmp
+*.bak
+/tmp/
