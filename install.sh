@@ -6,7 +6,7 @@
 #
 # 설치 내용:
 #   1. Skills -> ~/.claude/skills/ (모든 Claude Code 세션에서 사용 가능)
-#   2. 코어 파일 -> ~/.olympus/ (PANTHEON.md, 템플릿, 스크립트)
+#   2. 코어 파일 -> ~/.olympus/ (AGENTS.md, 템플릿, 스크립트)
 #   3. olympus CLI -> ~/.olympus/bin/olympus (PATH 등록)
 
 set -euo pipefail
@@ -77,7 +77,7 @@ if $REMOTE; then
 
     mkdir -p "$TMP_DIR/.claude/commands" "$TMP_DIR/scripts"
     curl -fsSL "$BASE_URL/.claude/commands/init.md"  -o "$TMP_DIR/.claude/commands/init.md"
-    curl -fsSL "$BASE_URL/PANTHEON.md"               -o "$TMP_DIR/PANTHEON.md"
+    curl -fsSL "$BASE_URL/AGENTS.md"               -o "$TMP_DIR/AGENTS.md"
     curl -fsSL "$BASE_URL/CLAUDE.md"                 -o "$TMP_DIR/CLAUDE.md"
     curl -fsSL "$BASE_URL/scripts/delegate-gemini.sh" -o "$TMP_DIR/scripts/delegate-gemini.sh"
     chmod +x "$TMP_DIR/scripts/delegate-gemini.sh"
@@ -105,7 +105,7 @@ echo -e "   ${GREEN}✓${NC} /init 커맨드"
 # ─── 3. 코어 파일 설치 ───
 echo -e "${CYAN}[3/5] Olympus 코어 파일 설치 (~/.olympus/)...${NC}"
 
-cp "$OLYMPUS_SRC/PANTHEON.md" "$OLYMPUS_HOME/templates/PANTHEON.md"
+cp "$OLYMPUS_SRC/AGENTS.md" "$OLYMPUS_HOME/templates/AGENTS.md"
 cp "$OLYMPUS_SRC/CLAUDE.md"   "$OLYMPUS_HOME/templates/CLAUDE.md"
 cp "$OLYMPUS_SRC/scripts/delegate-gemini.sh" "$OLYMPUS_HOME/scripts/delegate-gemini.sh"
 chmod +x "$OLYMPUS_HOME/scripts/delegate-gemini.sh"
@@ -126,7 +126,7 @@ Phase 1 — 초기 설정
 
 ## Key File Locations
 - CLAUDE.md: Athena 헌법
-- PANTHEON.md: 에이전트 규칙서
+- AGENTS.md: 에이전트 규칙서
 - artifacts/INDEX.md: 작업 상태 추적 (SSoT)
 - artifacts/handoff/: TP/RP 교환소
 - shared/context.md: 이 파일
@@ -172,7 +172,7 @@ elif [ -f "$OLYMPUS_SRC/VERSION" ]; then
     cp "$OLYMPUS_SRC/VERSION" "$OLYMPUS_HOME/VERSION" 2>/dev/null || true
 fi
 
-echo -e "   ${GREEN}✓${NC} PANTHEON.md, CLAUDE.md, settings.json 템플릿"
+echo -e "   ${GREEN}✓${NC} AGENTS.md, CLAUDE.md, settings.json 템플릿"
 echo -e "   ${GREEN}✓${NC} delegate-gemini.sh"
 
 # ─── 4. olympus CLI 설치 ───
@@ -235,8 +235,8 @@ cmd_new() {
         echo -e "   ${YELLOW}~${NC} CLAUDE.md (이미 존재, 유지)"
     fi
 
-    cp "$OLYMPUS_HOME/templates/PANTHEON.md" "PANTHEON.md"
-    echo -e "   ${GREEN}✓${NC} PANTHEON.md"
+    cp "$OLYMPUS_HOME/templates/AGENTS.md" "AGENTS.md"
+    echo -e "   ${GREEN}✓${NC} AGENTS.md"
 
     cp "$OLYMPUS_HOME/templates/settings.json" ".claude/settings.json"
     echo -e "   ${GREEN}✓${NC} .claude/settings.json"
@@ -353,7 +353,7 @@ cmd_doctor() {
 
     echo ""
     echo "Olympus 코어:"
-    check "PANTHEON.md 템플릿"  "$OLYMPUS_HOME/templates/PANTHEON.md"
+    check "AGENTS.md 템플릿"  "$OLYMPUS_HOME/templates/AGENTS.md"
     check "delegate-gemini.sh" "$OLYMPUS_HOME/scripts/delegate-gemini.sh"
     check "olympus CLI"        "$OLYMPUS_HOME/bin/olympus"
 

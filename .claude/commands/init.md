@@ -66,7 +66,7 @@
 
    ## Key File Locations
    - CLAUDE.md: Athena 헌법
-   - PANTHEON.md: 에이전트 규칙서
+   - AGENTS.md: 에이전트 규칙서
    - artifacts/INDEX.md: 작업 상태 추적 (SSoT)
    - artifacts/handoff/: TP/RP 교환소
    - shared/context.md: 이 파일 (공유 맥락)

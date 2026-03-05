@@ -48,20 +48,20 @@ status: `draft` -> `in-progress`, Updated: {datetime}
 **기본 (simple/moderate/complex):**
 ```bash
 codex -q --approval-mode auto-edit \
-  "Read PANTHEON.md to understand your role as Hephaestus and the RP format.
+  "Read AGENTS.md to understand your role as Hephaestus and the RP format.
    Read shared/context.md for project context.
    Then read artifacts/handoff/TP-NNN.md and implement the task exactly as specified.
-   When complete, write artifacts/handoff/RP-NNN.md as a RESULT_PACKET per PANTHEON.md format."
+   When complete, write artifacts/handoff/RP-NNN.md as a RESULT_PACKET per AGENTS.md format."
 ```
 
 **extreme (Inferno 모드):**
 ```bash
 codex -q --approval-mode full-auto \
-  "Read PANTHEON.md to understand your role as Hephaestus and the RP format.
+  "Read AGENTS.md to understand your role as Hephaestus and the RP format.
    Read shared/context.md for project context.
    Then read artifacts/handoff/TP-NNN.md and implement the task exactly as specified.
    This is an Inferno-level task: work autonomously until complete.
-   When complete, write artifacts/handoff/RP-NNN.md as a RESULT_PACKET per PANTHEON.md format."
+   When complete, write artifacts/handoff/RP-NNN.md as a RESULT_PACKET per AGENTS.md format."
 ```
 
 실행 중 상태 메시지:

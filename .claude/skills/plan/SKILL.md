@@ -44,7 +44,7 @@ allowed-tools: Read, Write, Glob
 
 ### Step 3: TP 작성
 
-`artifacts/handoff/TP-NNN.md`를 PANTHEON.md의 TP 형식에 따라 작성한다.
+`artifacts/handoff/TP-NNN.md`를 AGENTS.md의 TP 형식에 따라 작성한다.
 
 작성 원칙:
 - Objective는 정확히 한 문장. 동사로 시작.

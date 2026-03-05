@@ -91,10 +91,10 @@ mkdir -p artifacts/logs
 # ─── 프롬프트 구성 ───
 PROMPT="다음 순서로 작업하세요:
 
-1. PANTHEON.md를 읽어 Argus로서의 행동 규칙과 RP 포맷을 파악하세요.
+1. AGENTS.md를 읽어 Argus로서의 행동 규칙과 RP 포맷을 파악하세요.
 2. shared/context.md를 읽어 프로젝트 맥락을 파악하세요.
 3. ${TP_FILE}을 읽고 지시사항을 정확히 수행하세요.
-4. 완료 후 ${RP_FILE}을 PANTHEON.md의 RESULT_PACKET 형식으로 작성하세요.
+4. 완료 후 ${RP_FILE}을 AGENTS.md의 RESULT_PACKET 형식으로 작성하세요.
 
 RP 필수 섹션: Summary, Files Changed, Commands Executed,
 Acceptance Criteria Check (각 기준별 PASS/FAIL + 증거),

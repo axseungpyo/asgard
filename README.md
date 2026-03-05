@@ -154,7 +154,7 @@ olympus doctor       # 설치 상태 진단
 ```
 my-project/
 ├── CLAUDE.md                  # Athena 헌법 (Claude Code가 자동 로드)
-├── PANTHEON.md                # 에이전트 규칙서 + TP/RP 포맷
+├── AGENTS.md                # 에이전트 규칙서 + TP/RP 포맷
 ├── .claude/
 │   ├── settings.json          # PostToolUse 로깅 Hooks
 │   └── skills/                # (글로벌 설치 후 불필요)
