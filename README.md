@@ -94,7 +94,7 @@ Claude Code 세션에서:
 
 ## 핵심 개념
 
-### 에이전트 판테온
+### 에이전트 구성
 
 | 에이전트 | 실체 | 역할 |
 |---------|------|------|
@@ -120,6 +120,91 @@ Athena:      Glance[Haiku] / Insight[Sonnet] / Oracle[Opus]
 Hephaestus:  Ember[Low] / Flame[Medium] / Blaze[High] / Inferno[xHigh]
 Argus:       Glimpse[Flash-Lite] / Gaze[3.1 Pro] / Vision[Pro Image]
 ```
+
+---
+
+## 작동 원리
+
+> **Q. Claude가 `.md` 파일을 쓰면 Codex/Gemini가 어떻게 반응하는 건가요?**
+
+`.md` 파일 자체가 Codex/Gemini를 트리거하는 것이 **아닙니다**.
+Claude가 **Bash 명령어로 CLI를 직접 호출**하면서, 프롬프트 안에 "이 파일을 읽어라"라고 지시합니다.
+
+```
+사용자: "로그인 기능 만들어줘"
+    │
+    ▼
+┌─ Claude Code (Athena) ──────────────────────────────────┐
+│                                                          │
+│  1. Write 도구로 TP-004.md 작성 (작업 지시서)              │
+│                                                          │
+│  2. Bash 도구로 CLI 실행:                                 │
+│     codex exec --full-auto \                             │
+│       "Read AGENTS.md... Read TP-004.md...               │
+│        implement the task... write RP-004.md"            │
+│              │                                           │
+│              ▼                                           │
+│     ┌─ Codex CLI (별도 프로세스) ──────────┐              │
+│     │  GPT가 프롬프트를 받고:              │              │
+│     │  → AGENTS.md 읽음 (역할 파악)       │              │
+│     │  → TP-004.md 읽음 (작업 지시 파악)  │              │
+│     │  → 코드 구현                        │              │
+│     │  → RP-004.md 작성 (결과 보고)       │              │
+│     └─────────────────────────────────────┘              │
+│              │                                           │
+│  3. Claude가 RP-004.md를 읽고 검토 (승인/반려)            │
+│                                                          │
+└──────────────────────────────────────────────────────────┘
+```
+
+### 실제 실행되는 명령어
+
+```bash
+# Hephaestus (Codex) 호출
+codex exec --full-auto \
+  "Read AGENTS.md to understand your role as Hephaestus and the RP format.
+   Read shared/context.md for project context.
+   Then read artifacts/handoff/TP-NNN.md and implement the task exactly as specified.
+   When complete, write artifacts/handoff/RP-NNN.md as a RESULT_PACKET per AGENTS.md format."
+
+# Argus (Gemini) 호출
+gemini -p \
+  "Read AGENTS.md... Read TP-NNN.md... Write RP-NNN.md..." \
+  --yolo
+```
+
+### 단계별 역할
+
+| 단계 | 누가 | 뭘 하는지 | 도구 |
+|------|------|----------|------|
+| TP 작성 | Claude | 작업 지시서를 `.md` 파일로 저장 | Write |
+| CLI 호출 | Claude | `codex exec` 또는 `gemini -p` 실행 | Bash |
+| 파일 읽기 | Codex/Gemini | 프롬프트 지시대로 `.md` 파일을 읽음 | 자체 도구 |
+| 작업 수행 | Codex/Gemini | 코드 작성, 분석, 이미지 생성 등 | 자체 도구 |
+| RP 작성 | Codex/Gemini | 결과를 `.md` 파일로 디스크에 저장 | 자체 도구 |
+| 검토 | Claude | RP 파일을 읽고 승인/반려 판정 | Read |
+
+### 왜 파일 기반인가?
+
+| 이유 | 설명 |
+|------|------|
+| **프롬프트 한계** | 작업 지시가 길어지면 CLI 인자 크기 초과 — 파일로 분리 |
+| **감사 추적** | 누가 뭘 지시하고 뭘 했는지 전부 파일로 남음 |
+| **재시도 가능** | 실패 시 같은 TP로 다시 위임 |
+| **세션 독립** | Claude 세션이 끊겨도 TP/RP 파일은 디스크에 보존 |
+
+> **파일은 계약서이고, CLI 명령어가 실행 트리거입니다.**
+
+### 안전장치
+
+Gemini 실행 시 Watchdog 보호 시스템이 내장되어 있습니다:
+
+| 보호 | 기본값 | 동작 |
+|------|-------|------|
+| 전체 타임아웃 | 300초 | `timeout`/`gtimeout`으로 강제 종료 |
+| 출력 정체 감지 | 60초 무출력 | 프로세스 강제 종료 |
+| 로그 크기 제한 | 2MB | 초과 시 강제 종료 |
+| 에러 루프 감지 | 동일 에러 3회 | 반복 패턴 시 강제 종료 |
 
 ---
 
