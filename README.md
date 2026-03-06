@@ -216,6 +216,9 @@ Gemini 실행 시 Watchdog 보호 시스템이 내장되어 있습니다:
 | `/delegate TP-NNN` | Hephaestus(Codex)에 코드 작업 위임 |
 | `/delegate-gemini TP-NNN` | Argus(Gemini)에 비전/생성 작업 위임 |
 | `/chain "요청"` | Argus 분석 → Hephaestus 구현 체인 |
+| `/scout "질문"` | Claude 서브에이전트 병렬 탐색/리서치 |
+| `/scout verify RP-NNN` | RP의 AC를 병렬 검증 |
+| `/scout plan "주제"` | 기획 전 코드베이스 사전 조사 |
 | `/review RP-NNN` | RESULT_PACKET 검토 및 판정 |
 | `/digest` | 프로젝트 맥락 압축 업데이트 |
 | `/status` | 현재 작업 현황 보고 |

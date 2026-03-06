@@ -62,6 +62,9 @@ Hephaestus(Codex CLI)와 Argus(Gemini CLI)에게 위임한다.
 | 문서/PDF 분석 | Argus (Gemini) | /delegate-gemini | PDF, OCR, 문서 분석 |
 | 웹 리서치 | Argus (Gemini) | /delegate-gemini | 검색, 리서치, 조사 |
 | UI -> 코드 체인 | Argus + Hephaestus | /chain | 스크린샷 보고 구현, UI 클론 |
+| 코드베이스 탐색 | Athena 서브에이전트 | /scout | 탐색, 정찰, 코드 파악, 구조 분석 |
+| RP 병렬 검증 | Athena 서브에이전트 | /scout verify | verify, 검증, AC 확인 |
+| 기획 전 리서치 | Athena 서브에이전트 | /scout plan | 사전 조사, 영향 분석 |
 | 기획/설계 | Athena (직접) | — | 기획, 설계, 전략, 분석 |
 
 ## Agent Modes
@@ -90,6 +93,9 @@ Argus (Gemini CLI):
 - `/delegate TP-NNN` — Hephaestus(Codex)에 코드 작업 위임
 - `/delegate-gemini TP-NNN` — Argus(Gemini)에 비전/생성 작업 위임
 - `/chain "요청"` — Argus 분석 -> Hephaestus 구현 체인
+- `/scout "질문"` — Claude 서브에이전트 병렬 탐색/리서치
+- `/scout verify RP-NNN` — RP의 AC를 병렬 검증
+- `/scout plan "주제"` — 기획 전 코드베이스 사전 조사
 - `/review RP-NNN` — RESULT_PACKET 검토
 - `/digest` — shared/context.md 압축 업데이트
 - `/status` — 프로젝트 현황 확인
