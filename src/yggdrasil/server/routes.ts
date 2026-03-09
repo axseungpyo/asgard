@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs/promises";
 import { parseIndex, parseDocument } from "./parser";
 import { getAgentStates } from "./agents";
+import { authMiddleware } from "./auth";
 import { createLogger } from "./logger";
 import { collectMetrics } from "./metrics";
 import {
@@ -236,6 +237,8 @@ export function createRouter(asgardRoot: string): Router {
   router.get("/api/health", (_req: Request, res: Response) => {
     res.json({ status: "ok", uptime: process.uptime(), timestamp: Date.now() });
   });
+
+  router.use("/api", authMiddleware);
 
   // GET /api/status
   router.get("/api/status", async (_req: Request, res: Response) => {

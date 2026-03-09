@@ -3,6 +3,17 @@
 이 프로젝트의 주요 변경사항을 기록합니다.
 형식: [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)
 
+## [0.2.9] - 2026-03-09
+
+### Added
+- **WebSocket 인증 + 토큰 기반 API 보호** — Bearer 토큰 인증 시스템
+  - `server/auth.ts` — 랜덤 토큰 생성/재사용, authMiddleware
+  - `/api/*` 엔드포인트 인증 보호 (`/api/health` 제외)
+  - WebSocket `?token=` 쿼리 파라미터 인증
+  - 대시보드 토큰 입력 모달 + localStorage 저장
+  - `YGGDRASIL_AUTH=false` 환경변수로 인증 비활성화
+  - 단위 테스트 4개 추가 (총 34개)
+
 ## [0.2.8] - 2026-03-09
 
 ### Added

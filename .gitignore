@@ -14,6 +14,7 @@ src/
 src/yggdrasil/node_modules/
 src/yggdrasil/.next/
 src/yggdrasil/dashboard/.next/
+artifacts/.yggdrasil-token
 
 # artifacts 구조 파일은 포함 (INDEX.md, DECISIONS.md 등)
 !artifacts/INDEX.md

@@ -9,6 +9,12 @@ import type {
   AgentName,
   MetricsResponse,
 } from "../lib/types";
+import {
+  authFetch,
+  getStoredAuthToken,
+  setStoredAuthToken,
+  UnauthorizedError,
+} from "../lib/auth";
 import { useWebSocket } from "../lib/websocket";
 import { AGENT_CONFIG, AGENT_NAMES, getWsBase, MAX_LOGS } from "../lib/constants";
 import Header from "../components/Header";
@@ -44,46 +50,84 @@ export default function DashboardPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [metrics, setMetrics] = useState<MetricsResponse | null>(null);
+  const [authToken, setAuthToken] = useState("");
+  const [tokenInput, setTokenInput] = useState("");
+  const [authReady, setAuthReady] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("overview");
   const [dependencyGraph, setDependencyGraph] = useState<DependencyGraphResponse | null>(null);
   const [selectedDoc, setSelectedDoc] = useState<{
     type: "tp" | "rp";
     id: string;
   } | null>(null);
+  const isAuthenticated = authReady && authError === null;
+  const logsWsUrl = isAuthenticated
+    ? `${WS_BASE}/ws/logs?token=${encodeURIComponent(authToken)}`
+    : null;
+  const statusWsUrl = isAuthenticated
+    ? `${WS_BASE}/ws/status?token=${encodeURIComponent(authToken)}`
+    : null;
 
   const { lastMessage: logMsg, isConnected: logsConnected } = useWebSocket(
-    `${WS_BASE}/ws/logs`
+    logsWsUrl
   );
   const { lastMessage: statusMsg, isConnected: statusConnected } =
-    useWebSocket(`${WS_BASE}/ws/status`);
+    useWebSocket(statusWsUrl);
 
   const isConnected = logsConnected || statusConnected;
 
-  useEffect(() => {
-    fetch("/api/status")
-      .then((r) => r.json())
-      .then((data) => { if (data.agents) setAgents(data.agents); })
-      .catch((err) => console.warn("[Dashboard] Failed to fetch status:", err.message));
+  const loadDashboardData = useCallback(async (token: string) => {
+    const [statusRes, chronicleRes, dependencyRes, metricsRes] = await Promise.all([
+      authFetch("/api/status", {}, token),
+      authFetch("/api/chronicle", {}, token),
+      authFetch("/api/dependency-graph", {}, token),
+      authFetch("/api/metrics", {}, token),
+    ]);
 
-    fetch("/api/chronicle")
-      .then((r) => r.json())
-      .then((data) => { if (data.tasks) setTasks(data.tasks); })
-      .catch((err) => console.warn("[Dashboard] Failed to fetch chronicle:", err.message));
+    const [statusData, chronicleData, dependencyData, metricsData] = await Promise.all([
+      statusRes.json(),
+      chronicleRes.json(),
+      dependencyRes.json(),
+      metricsRes.json(),
+    ]);
 
-    fetch("/api/dependency-graph")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.nodes && data.executionOrder) setDependencyGraph(data);
-      })
-      .catch((err) => console.warn("[Dashboard] Failed to fetch dependency graph:", err.message));
-
-    fetch("/api/metrics")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.agents && data.daily && data.recentExecutions) setMetrics(data);
-      })
-      .catch((err) => console.warn("[Dashboard] Failed to fetch metrics:", err.message));
+    if (statusData.agents) setAgents(statusData.agents);
+    if (chronicleData.tasks) setTasks(chronicleData.tasks);
+    if (dependencyData.nodes && dependencyData.executionOrder) setDependencyGraph(dependencyData);
+    if (metricsData.agents && metricsData.daily && metricsData.recentExecutions) {
+      setMetrics(metricsData);
+    }
   }, []);
+
+  const authenticate = useCallback(async (candidateToken: string) => {
+    const normalizedToken = candidateToken.trim();
+    setAuthError(null);
+
+    try {
+      await loadDashboardData(normalizedToken);
+      setStoredAuthToken(normalizedToken);
+      setAuthToken(normalizedToken);
+      setTokenInput(normalizedToken);
+      setAuthReady(true);
+    } catch (err: unknown) {
+      if (err instanceof UnauthorizedError) {
+        setStoredAuthToken("");
+        setAuthToken("");
+        setAuthReady(false);
+        setAuthError("Invalid token");
+        return;
+      }
+
+      setAuthReady(true);
+      setAuthError(err instanceof Error ? err.message : "Failed to load dashboard");
+    }
+  }, [loadDashboardData]);
+
+  useEffect(() => {
+    const storedToken = getStoredAuthToken();
+    setTokenInput(storedToken);
+    void authenticate(storedToken);
+  }, [authenticate]);
 
   useEffect(() => {
     if (!logMsg) return;
@@ -138,6 +182,10 @@ export default function DashboardPage() {
 
   const getAgentStatus = (name: AgentName): boolean =>
     agents.find((a) => a.name === name)?.status === "running";
+
+  const handleConnect = useCallback(async () => {
+    await authenticate(tokenInput);
+  }, [authenticate, tokenInput]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -272,6 +320,40 @@ export default function DashboardPage() {
           id={selectedDoc.id}
           onClose={() => setSelectedDoc(null)}
         />
+      )}
+
+      {!isAuthenticated && (
+        <>
+          <div className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm" />
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+            <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
+              <div className="text-[11px] font-mono uppercase tracking-[0.25em] text-zinc-500">
+                Yggdrasil Auth
+              </div>
+              <h2 className="mt-3 text-xl font-mono text-zinc-100">Enter access token</h2>
+              <p className="mt-2 text-sm leading-6 text-zinc-500">
+                Paste the token printed by the Yggdrasil server and connect the dashboard.
+              </p>
+              <input
+                value={tokenInput}
+                onChange={(event) => setTokenInput(event.target.value)}
+                placeholder="Bearer token"
+                className="mt-5 w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-zinc-600"
+              />
+              {authError && (
+                <div className="mt-3 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+                  {authError}
+                </div>
+              )}
+              <button
+                onClick={() => void handleConnect()}
+                className="mt-5 w-full rounded-lg border border-zinc-700 bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-950 transition hover:bg-white"
+              >
+                Connect
+              </button>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

@@ -3,6 +3,7 @@ import path from "path";
 import express from "express";
 import { WebSocketServer, WebSocket } from "ws";
 import next from "next";
+import { getToken, validateToken } from "./auth";
 import { createRouter } from "./routes";
 import { AsgardWatcher } from "./watcher";
 import { parseIndex } from "./parser";
@@ -101,7 +102,24 @@ async function main() {
     broadcast(wssStatus, { type: "status", data: agents });
   });
 
-  wssLogs.on("connection", async (ws) => {
+  function authorizeWebSocket(ws: WebSocket, request: http.IncomingMessage, channel: string): boolean {
+    const url = new URL(request.url || "/", `http://localhost:${PORT}`);
+    const token = url.searchParams.get("token") ?? "";
+
+    if (!validateToken(token)) {
+      log.warn({ channel, pathname: url.pathname }, "Rejected unauthorized WebSocket connection");
+      ws.close(4001, "Unauthorized");
+      return false;
+    }
+
+    return true;
+  }
+
+  wssLogs.on("connection", async (ws, request) => {
+    if (!authorizeWebSocket(ws, request, "logs")) {
+      return;
+    }
+
     ws.send(JSON.stringify({ type: "connected", data: { message: "Logs stream connected" } }));
     try {
       const recentLogs = await watcher.getRecentLogs(100);
@@ -115,7 +133,11 @@ async function main() {
     }
   });
 
-  wssStatus.on("connection", async (ws) => {
+  wssStatus.on("connection", async (ws, request) => {
+    if (!authorizeWebSocket(ws, request, "status")) {
+      return;
+    }
+
     ws.send(JSON.stringify({ type: "connected", data: { message: "Status stream connected" } }));
     try {
       const indexPath = path.join(ASGARD_ROOT, "artifacts", "INDEX.md");
@@ -141,9 +163,17 @@ async function main() {
   await watcher.start();
 
   server.listen(PORT, () => {
+    const token = getToken();
     log.info({ port: PORT, url: `http://localhost:${PORT}` }, "Server running");
     log.info({ asgardRoot: ASGARD_ROOT }, "Resolved ASGARD_ROOT");
     log.info({ mode: dev ? "development" : "production" }, "Server mode");
+    log.info(
+      {
+        authEnabled: process.env.YGGDRASIL_AUTH !== "false",
+        token,
+      },
+      "Yggdrasil auth token"
+    );
     log.info({ endpoints: ["/ws/logs", "/ws/status"] }, "WebSocket endpoints ready");
   });
 

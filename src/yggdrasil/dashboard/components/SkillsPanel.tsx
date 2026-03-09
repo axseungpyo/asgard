@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { authFetch } from "../lib/auth";
 import { AGENT_CONFIG } from "../lib/constants";
 
 type Category = "all" | "planning" | "dispatch" | "intel" | "system";
@@ -188,7 +189,7 @@ export default function SkillsPanel() {
     setErrorBySkill((prev) => ({ ...prev, [skillName]: "" }));
 
     try {
-      const response = await fetch("/api/skill/execute", {
+      const response = await authFetch("/api/skill/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

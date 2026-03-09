@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { authFetch } from "../lib/auth";
 
 interface DocViewerProps {
   type: "tp" | "rp";
@@ -18,7 +19,7 @@ function DocPanel({ type, id }: { type: "tp" | "rp"; id: string }) {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    fetch(`/api/document/${type}/${id}`)
+    authFetch(`/api/document/${type}/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("Document not found");
         return res.json();

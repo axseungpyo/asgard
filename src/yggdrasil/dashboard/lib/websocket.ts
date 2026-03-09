@@ -8,13 +8,17 @@ interface UseWebSocketReturn {
   send: (data: string) => void;
 }
 
-export function useWebSocket(wsUrl: string): UseWebSocketReturn {
+export function useWebSocket(wsUrl: string | null): UseWebSocketReturn {
   const [lastMessage, setLastMessage] = useState<unknown>(null);
   const [isConnected, setIsConnected] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const connect = useCallback(() => {
+    if (!wsUrl) {
+      return;
+    }
+
     try {
       const ws = new WebSocket(wsUrl);
       wsRef.current = ws;
@@ -45,6 +49,18 @@ export function useWebSocket(wsUrl: string): UseWebSocketReturn {
   }, [wsUrl]);
 
   useEffect(() => {
+    if (!wsUrl) {
+      setIsConnected(false);
+      setLastMessage(null);
+      if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
+      if (wsRef.current) {
+        wsRef.current.onclose = null;
+        wsRef.current.close();
+        wsRef.current = null;
+      }
+      return;
+    }
+
     connect();
     return () => {
       if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
@@ -53,7 +69,7 @@ export function useWebSocket(wsUrl: string): UseWebSocketReturn {
         wsRef.current.close();
       }
     };
-  }, [connect]);
+  }, [connect, wsUrl]);
 
   const send = useCallback((data: string) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {

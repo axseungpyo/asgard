@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { authFetch } from "../lib/auth";
 
 interface ActionResult {
   error?: string;
@@ -39,7 +40,7 @@ export default function QuickActions() {
     setError("");
 
     try {
-      const response = await fetch("/api/skill/execute", {
+      const response = await authFetch("/api/skill/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ skill: action, args }),
