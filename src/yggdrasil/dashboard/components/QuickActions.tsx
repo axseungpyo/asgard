@@ -62,11 +62,11 @@ export default function QuickActions() {
 
   return (
     <section>
-      <h2 className="text-[13px] font-mono font-medium text-zinc-500 uppercase tracking-[0.15em] mb-4">
+      <h2 className="text-[13px] font-mono font-medium text-slate-400 uppercase tracking-[0.15em] mb-4">
         Quick Actions
       </h2>
 
-      <div className="rounded-xl border border-zinc-800/60 bg-bg-secondary p-4 sm:p-5 space-y-4">
+      <div className="rounded-xl border border-border/60 bg-bg-secondary p-4 sm:p-5 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {ACTIONS.map((action) => {
             const isRunning = running === action.id;
@@ -76,15 +76,15 @@ export default function QuickActions() {
                 key={action.id}
                 onClick={() => runAction(action.id, action.args)}
                 disabled={isRunning}
-                className="rounded-lg border border-zinc-800 bg-zinc-950/70 px-4 py-4 text-left transition-colors hover:border-zinc-700 hover:bg-zinc-900/70 disabled:opacity-60 disabled:cursor-wait"
+                className="rounded-lg border border-border bg-bg-primary/70 px-4 py-4 text-left transition-colors hover:border-slate-700 hover:bg-bg-secondary/70 disabled:opacity-60 disabled:cursor-wait"
               >
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-[14px] font-mono text-zinc-100">{action.label}</span>
+                  <span className="text-[14px] font-mono text-slate-100">{action.label}</span>
                   <span className="text-[11px] font-mono text-emerald-300">
                     {isRunning ? "Running..." : "POST"}
                   </span>
                 </div>
-                <p className="mt-2 text-[12px] text-zinc-500 leading-relaxed">
+                <p className="mt-2 text-[12px] text-slate-400 leading-relaxed">
                   {action.description}
                 </p>
               </button>
@@ -99,8 +99,8 @@ export default function QuickActions() {
         )}
 
         {result && (
-          <div className="rounded-lg border border-zinc-800 bg-zinc-950/80 p-3">
-            <div className="mb-2 text-[11px] font-mono uppercase tracking-wider text-zinc-600">
+          <div className="rounded-lg border border-border bg-bg-primary/80 p-3">
+            <div className="mb-2 text-[11px] font-mono uppercase tracking-wider text-slate-500">
               Result
             </div>
             <pre className="overflow-x-auto whitespace-pre-wrap break-words text-[11px] leading-5 text-cyan-200 font-mono">

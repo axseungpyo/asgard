@@ -48,22 +48,22 @@ export default function Chronicle({ tasks, onDocClick }: ChronicleProps) {
   const doneTasks = tasks.filter((t) => t.status === "done").length;
 
   return (
-    <div className="bg-bg-secondary border border-zinc-500/60 rounded-lg overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-800/60">
-        <h2 className="text-[12px] font-mono font-medium text-zinc-400 uppercase tracking-wider">Chronicle</h2>
+    <div className="bg-bg-secondary border border-border/60 rounded-lg overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/60">
+        <h2 className="text-[12px] font-mono font-medium text-slate-400 uppercase tracking-wider">Chronicle</h2>
         {tasks.length > 0 && (
-          <span className="text-[12px] text-zinc-600 font-mono">{doneTasks}/{tasks.length}</span>
+          <span className="text-[12px] text-slate-500 font-mono">{doneTasks}/{tasks.length}</span>
         )}
       </div>
 
       {tasks.length > 0 && (
-        <div className="flex items-center gap-2 px-3 py-2 border-b border-zinc-800/40">
+        <div className="flex items-center gap-2 px-3 py-2 border-b border-border/40">
           <input
             type="text"
             placeholder="Search tasks..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 bg-zinc-900/50 border border-zinc-700/50 rounded px-2 py-1 text-[12px] font-mono text-zinc-300 placeholder-zinc-600 outline-none focus:border-zinc-500/60"
+            className="flex-1 bg-bg-secondary/50 border border-slate-700/50 rounded px-2 py-1 text-[12px] font-mono text-slate-300 placeholder-slate-500 outline-none focus:border-slate-500/60"
           />
           <div className="flex gap-1">
             {STATUS_FILTERS.map((f) => (
@@ -72,8 +72,8 @@ export default function Chronicle({ tasks, onDocClick }: ChronicleProps) {
                 onClick={() => setStatusFilter(f.value)}
                 className={`px-2 py-0.5 rounded text-[10px] font-mono transition-colors ${
                   statusFilter === f.value
-                    ? "bg-zinc-700 text-zinc-200"
-                    : "text-zinc-500 hover:text-zinc-400"
+                    ? "bg-slate-700 text-slate-200"
+                    : "text-slate-400 hover:text-slate-300"
                 }`}
               >
                 {f.label}
@@ -86,7 +86,7 @@ export default function Chronicle({ tasks, onDocClick }: ChronicleProps) {
       <div className="p-1.5">
         {filteredTasks.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-zinc-700 text-[13px] font-mono">
+            <p className="text-slate-500 text-[13px] font-mono">
               {tasks.length === 0 ? "No tasks recorded" : "No matching tasks"}
             </p>
           </div>
@@ -100,7 +100,7 @@ export default function Chronicle({ tasks, onDocClick }: ChronicleProps) {
               return (
                 <div
                   key={task.id}
-                  className="flex items-center gap-3 px-3 py-2 rounded hover:bg-zinc-800/40 transition-colors group"
+                  className="flex items-center gap-3 px-3 py-2 rounded hover:bg-bg-tertiary/40 transition-colors group"
                 >
                   <span
                     className={`w-1.5 h-1.5 rounded-full shrink-0 ${task.status === "in-progress" ? "animate-pulse-dot" : ""}`}
@@ -114,7 +114,7 @@ export default function Chronicle({ tasks, onDocClick }: ChronicleProps) {
                     {task.id}
                   </button>
 
-                  <span className="text-[13px] text-zinc-300 truncate flex-1">{task.title}</span>
+                  <span className="text-[13px] text-slate-300 truncate flex-1">{task.title}</span>
 
                   <span className="text-[12px] font-mono shrink-0" style={{ color: ac.color }}>
                     {ac.label}

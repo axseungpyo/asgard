@@ -44,9 +44,9 @@ export default function TerminalPanel({
   const agentLogs = logs.filter((l) => l.agent === agent);
 
   return (
-    <div className={`bg-bg-secondary border border-zinc-500/60 rounded-lg overflow-hidden flex flex-col transition-all ${isExpanded ? "col-span-3" : ""}`}>
+    <div className={`bg-bg-secondary border border-border/60 rounded-lg overflow-hidden flex flex-col transition-all ${isExpanded ? "col-span-3" : ""}`}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-800/60">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/60">
         <div className="flex items-center gap-3">
           {isRunning && (
             <span className="w-1.5 h-1.5 rounded-full animate-pulse-dot" style={{ backgroundColor: accentColor }} />
@@ -54,14 +54,14 @@ export default function TerminalPanel({
           <span className="text-[12px] font-mono font-medium" style={{ color: accentColor }}>
             {displayName}
           </span>
-          <span className="text-[12px] text-zinc-700 font-mono">{model}</span>
+          <span className="text-[12px] text-slate-500 font-mono">{model}</span>
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-[12px] text-zinc-700 font-mono">{agentLogs.length}</span>
+          <span className="text-[12px] text-slate-500 font-mono">{agentLogs.length}</span>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-zinc-600 hover:text-zinc-400 transition-colors"
+            className="text-slate-500 hover:text-slate-400 transition-colors"
           >
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5">
               {isExpanded ? (
@@ -82,7 +82,7 @@ export default function TerminalPanel({
       >
         {agentLogs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10">
-            <span className="text-zinc-700 font-mono text-[12px]">
+            <span className="text-slate-500 font-mono text-[12px]">
               $ waiting for {agent}...
             </span>
           </div>
@@ -98,10 +98,10 @@ export default function TerminalPanel({
                   className={`px-1.5 py-px rounded-sm ${
                     isError ? "bg-[#ff6b6b]/5 text-[#ff6b6b]" :
                     isWarn ? "bg-[#fbbf24]/5 text-[#fbbf24]" :
-                    "text-zinc-500"
+                    "text-slate-400"
                   }`}
                 >
-                  <span className="text-zinc-700 select-none mr-2">{formatTime(log.timestamp)}</span>
+                  <span className="text-slate-500 select-none mr-2">{formatTime(log.timestamp)}</span>
                   {log.message}
                 </div>
               );
@@ -109,8 +109,8 @@ export default function TerminalPanel({
 
             {isRunning && (
               <div className="flex items-center gap-1 px-1.5 mt-1">
-                <span className="text-zinc-700">$</span>
-                <span className="inline-block w-[6px] h-[13px] bg-zinc-600 animate-pulse" />
+                <span className="text-slate-500">$</span>
+                <span className="inline-block w-[6px] h-[13px] bg-slate-500 animate-pulse" />
               </div>
             )}
 

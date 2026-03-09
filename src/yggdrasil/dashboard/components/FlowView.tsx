@@ -28,19 +28,19 @@ export default function FlowView({ tasks }: FlowViewProps) {
 
   if (flowTasks.length === 0) {
     return (
-      <div className="bg-bg-secondary border border-zinc-500/60 rounded-lg p-8 text-center">
-        <p className="text-zinc-700 text-[13px] font-mono">No task flow available</p>
+      <div className="bg-bg-secondary border border-border/60 rounded-lg p-8 text-center">
+        <p className="text-slate-500 text-[13px] font-mono">No task flow available</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-bg-secondary border border-zinc-500/60 rounded-lg overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-800/60">
-        <h2 className="text-[12px] font-mono font-medium text-zinc-400 uppercase tracking-wider">
+    <div className="bg-bg-secondary border border-border/60 rounded-lg overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/60">
+        <h2 className="text-[12px] font-mono font-medium text-slate-400 uppercase tracking-wider">
           Task Flow
         </h2>
-        <span className="text-[12px] text-zinc-600 font-mono">{flowTasks.length} tasks</span>
+        <span className="text-[12px] text-slate-500 font-mono">{flowTasks.length} tasks</span>
       </div>
 
       <div className="p-3 sm:p-4 space-y-3">
@@ -56,12 +56,12 @@ export default function FlowView({ tasks }: FlowViewProps) {
           return (
             <div
               key={task.id}
-              className="rounded-lg border border-zinc-800/80 bg-zinc-950/40 px-3 py-3 sm:px-4"
+              className="rounded-lg border border-border/80 bg-bg-primary/40 px-3 py-3 sm:px-4"
             >
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-3">
                 <div>
-                  <div className="text-[12px] font-mono text-zinc-500">{task.id}</div>
-                  <div className="text-[14px] text-zinc-200">{task.title}</div>
+                  <div className="text-[12px] font-mono text-slate-400">{task.id}</div>
+                  <div className="text-[14px] text-slate-200">{task.title}</div>
                 </div>
                 <div
                   className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[11px] font-mono self-start ${
@@ -122,7 +122,7 @@ interface FlowNodeProps {
 function FlowNode({ label, title, subtitle, accent, isAnimated = false }: FlowNodeProps) {
   return (
     <div
-      className={`relative overflow-hidden rounded-lg border bg-zinc-900/70 px-3 py-3 min-h-[92px] ${
+      className={`relative overflow-hidden rounded-lg border bg-bg-secondary/70 px-3 py-3 min-h-[92px] ${
         isAnimated ? "animate-pulse-dot" : ""
       }`}
       style={{ borderColor: `${accent}44` }}
@@ -131,10 +131,10 @@ function FlowNode({ label, title, subtitle, accent, isAnimated = false }: FlowNo
         className="absolute inset-x-0 top-0 h-px"
         style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
       />
-      <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-zinc-500 mb-2">
+      <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-slate-400 mb-2">
         {label}
       </div>
-      <div className="text-[14px] text-zinc-100 break-all">{title}</div>
+      <div className="text-[14px] text-slate-100 break-all">{title}</div>
       <div className="text-[12px] font-mono mt-1" style={{ color: accent }}>
         {subtitle}
       </div>

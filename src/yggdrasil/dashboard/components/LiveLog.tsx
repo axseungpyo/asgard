@@ -42,24 +42,24 @@ export default function LiveLog({ logs }: LiveLogProps) {
   }, [filtered.length, autoScroll]);
 
   return (
-    <div className="bg-bg-secondary border border-zinc-500/60 rounded-lg overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-800/60">
+    <div className="bg-bg-secondary border border-border/60 rounded-lg overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/60">
         <div className="flex items-center gap-3">
-          <h2 className="text-[12px] font-mono font-medium text-zinc-400 uppercase tracking-wider">Logs</h2>
+          <h2 className="text-[12px] font-mono font-medium text-slate-400 uppercase tracking-wider">Logs</h2>
           {filtered.length > 0 && (
-            <span className="text-[12px] text-zinc-600 font-mono">{filtered.length}</span>
+            <span className="text-[12px] text-slate-500 font-mono">{filtered.length}</span>
           )}
         </div>
         <button
           onClick={() => setAutoScroll(!autoScroll)}
-          className="text-[12px] text-zinc-600 hover:text-zinc-400 transition-colors font-mono"
+          className="text-[12px] text-slate-500 hover:text-slate-400 transition-colors font-mono"
         >
           auto {autoScroll ? "on" : "off"}
         </button>
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-px px-3 py-1.5 border-b border-zinc-800/40">
+      <div className="flex items-center gap-px px-3 py-1.5 border-b border-border/40">
         {tabs.map((tab) => (
           <button
             key={tab.key}
@@ -79,7 +79,7 @@ export default function LiveLog({ logs }: LiveLogProps) {
       <div className="bg-bg-primary max-h-[400px] overflow-y-auto p-3">
         {filtered.length === 0 ? (
           <div className="text-center py-10">
-            <p className="text-zinc-700 text-[12px] font-mono">waiting for logs...</p>
+            <p className="text-slate-500 text-[12px] font-mono">waiting for logs...</p>
           </div>
         ) : (
           <div className="font-mono text-[12px] leading-[1.8] space-y-px">
@@ -95,12 +95,12 @@ export default function LiveLog({ logs }: LiveLogProps) {
                     isError ? "bg-[#ff6b6b]/5" : isWarn ? "bg-[#fbbf24]/5" : ""
                   }`}
                 >
-                  <span className="text-zinc-700 shrink-0 select-none">{formatTime(log.timestamp)}</span>
+                  <span className="text-slate-500 shrink-0 select-none">{formatTime(log.timestamp)}</span>
                   <span className="shrink-0 w-[72px] text-right" style={{ color: tagColor }}>
                     {log.agent.toUpperCase()}
                   </span>
                   <span className={
-                    isError ? "text-[#ff6b6b]" : isWarn ? "text-[#fbbf24]" : "text-zinc-500"
+                    isError ? "text-[#ff6b6b]" : isWarn ? "text-[#fbbf24]" : "text-slate-400"
                   }>
                     {log.message}
                   </span>

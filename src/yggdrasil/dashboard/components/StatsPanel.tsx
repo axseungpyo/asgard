@@ -50,7 +50,7 @@ export default function StatsPanel({ tasks, metrics }: StatsPanelProps) {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
-        <div className="bg-bg-secondary border border-zinc-500/60 rounded-lg overflow-hidden">
+        <div className="bg-bg-secondary border border-border/60 rounded-lg overflow-hidden">
           <PanelHeader title="Tasks by Agent" />
           <div className="p-4 space-y-3">
             {Object.entries(stats.byAgent).length === 0 ? (
@@ -75,7 +75,7 @@ export default function StatsPanel({ tasks, metrics }: StatsPanelProps) {
           </div>
         </div>
 
-        <div className="bg-bg-secondary border border-zinc-500/60 rounded-lg overflow-hidden">
+        <div className="bg-bg-secondary border border-border/60 rounded-lg overflow-hidden">
           <PanelHeader title="Status Distribution" />
           <div className="p-4 space-y-3">
             {Object.entries(stats.byStatus).length === 0 ? (
@@ -107,8 +107,8 @@ export default function StatsPanel({ tasks, metrics }: StatsPanelProps) {
 
 function PanelHeader({ title }: { title: string }) {
   return (
-    <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-800/60">
-      <h2 className="text-[12px] font-mono font-medium text-zinc-400 uppercase tracking-wider">
+    <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/60">
+      <h2 className="text-[12px] font-mono font-medium text-slate-400 uppercase tracking-wider">
         {title}
       </h2>
     </div>
@@ -117,11 +117,11 @@ function PanelHeader({ title }: { title: string }) {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-bg-secondary border border-zinc-500/60 rounded-lg p-4">
-      <div className="text-[11px] font-mono uppercase tracking-[0.15em] text-zinc-500">
+    <div className="bg-bg-secondary border border-border/60 rounded-lg p-4">
+      <div className="text-[11px] font-mono uppercase tracking-[0.15em] text-slate-400">
         {label}
       </div>
-      <div className="mt-2 text-3xl font-semibold text-zinc-100">{value}</div>
+      <div className="mt-2 text-3xl font-semibold text-slate-100">{value}</div>
     </div>
   );
 }
@@ -141,15 +141,15 @@ function BarRow({
 
   return (
     <div className="grid grid-cols-[120px_1fr_auto] gap-3 items-center">
-      <div className="text-[12px] font-mono text-zinc-400 truncate">{label}</div>
-      <div className="h-2.5 rounded-full bg-zinc-900/80 overflow-hidden">
+      <div className="text-[12px] font-mono text-slate-400 truncate">{label}</div>
+      <div className="h-2.5 rounded-full bg-bg-primary/80 overflow-hidden">
         <div className="h-full rounded-full" style={{ width, backgroundColor: color }} />
       </div>
-      <div className="text-[12px] font-mono text-zinc-500 tabular-nums">{count}</div>
+      <div className="text-[12px] font-mono text-slate-400 tabular-nums">{count}</div>
     </div>
   );
 }
 
 function EmptyState() {
-  return <p className="text-zinc-700 text-[13px] font-mono text-center py-8">No data</p>;
+  return <p className="text-slate-500 text-[13px] font-mono text-center py-8">No data</p>;
 }

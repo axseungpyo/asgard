@@ -198,34 +198,34 @@ export default function DashboardPage() {
         <div className="my-4 sm:my-5 lg:my-7">
           <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-6 lg:gap-14 items-end">
             <div>
-              <h1 className="sm:hidden text-2xl font-mono font-bold text-zinc-200 tracking-[0.2em]">ASGARD</h1>
-              <pre className="hidden sm:block text-zinc-300 text-[12px] lg:text-[16px] tracking-[-1px] leading-[120%] select-none whitespace-pre font-mono" aria-label="ASGARD">{`
+              <h1 className="sm:hidden text-2xl font-mono font-bold text-slate-200 tracking-[0.2em]">ASGARD</h1>
+              <pre className="hidden sm:block text-slate-300 text-[12px] lg:text-[16px] tracking-[-1px] leading-[120%] select-none whitespace-pre font-mono" aria-label="ASGARD">{`
  █████╗ ███████╗ ██████╗  █████╗ ██████╗ ██████╗
 ██╔══██╗██╔════╝██╔════╝ ██╔══██╗██╔══██╗██╔══██╗
 ███████║███████╗██║  ███╗███████║██████╔╝██║  ██║
 ██╔══██║╚════██║██║   ██║██╔══██║██╔══██╗██║  ██║
 ██║  ██║███████║╚██████╔╝██║  ██║██║  ██║██████╔╝
 ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝`.trimStart()}</pre>
-              <p className="mt-4 text-[15px] lg:text-[19px] font-mono font-bold text-zinc-100 uppercase tracking-[0.25em]">
+              <p className="mt-4 text-[15px] lg:text-[19px] font-mono font-bold text-slate-100 uppercase tracking-[0.25em]">
                 The Multi-Agent Orchestration System
               </p>
             </div>
-            <p className="text-lg sm:text-xl lg:text-[22px] text-zinc-500 max-w-md leading-relaxed lg:leading-[1.5] self-end mb-0.5">
+            <p className="text-lg sm:text-xl lg:text-[22px] text-slate-400 max-w-md leading-relaxed lg:leading-[1.5] self-end mb-0.5">
               Runes are task contracts for AI agents. Route them with a single command to orchestrate your pantheon across planning, coding, and vision workflows.
             </p>
           </div>
         </div>
 
         {/* View Tabs */}
-        <div className="flex items-center gap-1 border-b border-zinc-800/60 mb-8">
+        <div className="flex items-center gap-1 border-b border-border/60 mb-8">
           {(["overview", "terminals", "flow", "stats", "skills"] as const).map((mode) => (
             <button
               key={mode}
               onClick={() => setViewMode(mode)}
               className={`px-3 py-2 text-[13px] font-mono border-b-2 transition-colors ${
                 viewMode === mode
-                  ? "border-zinc-300 text-zinc-200"
-                  : "border-transparent text-zinc-600 hover:text-zinc-400"
+                  ? "border-slate-300 text-slate-200"
+                  : "border-transparent text-slate-500 hover:text-slate-400"
               }`}
             >
               {mode}
@@ -238,14 +238,14 @@ export default function DashboardPage() {
         ) : viewMode === "flow" ? (
           <div className="space-y-6">
             <section>
-              <h2 className="text-[13px] font-mono font-medium text-zinc-500 uppercase tracking-[0.15em] mb-4">
+              <h2 className="text-[13px] font-mono font-medium text-slate-400 uppercase tracking-[0.15em] mb-4">
                 Flow
               </h2>
               <FlowView tasks={tasks} />
             </section>
 
             <section>
-              <h2 className="text-[13px] font-mono font-medium text-zinc-500 uppercase tracking-[0.15em] mb-4">
+              <h2 className="text-[13px] font-mono font-medium text-slate-400 uppercase tracking-[0.15em] mb-4">
                 Dependency Graph
               </h2>
               <DependencyView graph={dependencyGraph} />
@@ -253,7 +253,7 @@ export default function DashboardPage() {
           </div>
         ) : viewMode === "stats" ? (
           <section>
-            <h2 className="text-[13px] font-mono font-medium text-zinc-500 uppercase tracking-[0.15em] mb-4">
+            <h2 className="text-[13px] font-mono font-medium text-slate-400 uppercase tracking-[0.15em] mb-4">
               Stats
             </h2>
             <StatsPanel tasks={tasks} metrics={metrics} />
@@ -263,7 +263,7 @@ export default function DashboardPage() {
             <QuickActions />
 
             <section>
-              <h2 className="text-[13px] font-mono font-medium text-zinc-500 uppercase tracking-[0.15em] mb-4">Agents</h2>
+              <h2 className="text-[13px] font-mono font-medium text-slate-400 uppercase tracking-[0.15em] mb-4">Agents</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
                 {agents.map((agent) => (
                   <AgentCard key={agent.name} agent={agent} />
@@ -281,7 +281,7 @@ export default function DashboardPage() {
         ) : (
           <div className="space-y-10">
             <section>
-              <h2 className="text-[13px] font-mono font-medium text-zinc-500 uppercase tracking-[0.15em] mb-4">Agents</h2>
+              <h2 className="text-[13px] font-mono font-medium text-slate-400 uppercase tracking-[0.15em] mb-4">Agents</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
                 {agents.map((agent) => (
                   <AgentCard key={agent.name} agent={agent} />
@@ -290,7 +290,7 @@ export default function DashboardPage() {
             </section>
 
             <section>
-              <h2 className="text-[13px] font-mono font-medium text-zinc-500 uppercase tracking-[0.15em] mb-4">Terminals</h2>
+              <h2 className="text-[13px] font-mono font-medium text-slate-400 uppercase tracking-[0.15em] mb-4">Terminals</h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4 gap-3">
                 {AGENT_NAMES.map((name) => {
                   const cfg = AGENT_CONFIG[name];
@@ -312,8 +312,8 @@ export default function DashboardPage() {
         )}
       </main>
 
-      <footer className="border-t border-zinc-800/40 px-6 py-4 text-center mt-10">
-        <span className="text-[13px] text-zinc-700 font-mono tracking-wide">yggdrasil v0.3.1</span>
+      <footer className="border-t border-border/40 px-6 py-4 text-center mt-10">
+        <span className="text-[13px] text-slate-500 font-mono tracking-wide">yggdrasil v0.3.1</span>
       </footer>
 
       {selectedDoc && (
@@ -328,21 +328,21 @@ export default function DashboardPage() {
 
       {!isAuthenticated && (
         <>
-          <div className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm" />
+          <div className="fixed inset-0 z-40 bg-[#0c0f1a]/80 backdrop-blur-sm" />
           <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-            <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
-              <div className="text-[11px] font-mono uppercase tracking-[0.25em] text-zinc-500">
+            <div className="w-full max-w-md rounded-2xl border border-border bg-bg-primary p-6 shadow-2xl">
+              <div className="text-[11px] font-mono uppercase tracking-[0.25em] text-slate-400">
                 Yggdrasil Auth
               </div>
-              <h2 className="mt-3 text-xl font-mono text-zinc-100">Enter access token</h2>
-              <p className="mt-2 text-sm leading-6 text-zinc-500">
+              <h2 className="mt-3 text-xl font-mono text-slate-100">Enter access token</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-400">
                 Paste the token printed by the Yggdrasil server and connect the dashboard.
               </p>
               <input
                 value={tokenInput}
                 onChange={(event) => setTokenInput(event.target.value)}
                 placeholder="Bearer token"
-                className="mt-5 w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-zinc-600"
+                className="mt-5 w-full rounded-lg border border-border bg-bg-secondary px-3 py-2 text-sm text-slate-100 outline-none transition focus:border-slate-500"
               />
               {authError && (
                 <div className="mt-3 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
@@ -351,7 +351,7 @@ export default function DashboardPage() {
               )}
               <button
                 onClick={() => void handleConnect()}
-                className="mt-5 w-full rounded-lg border border-zinc-700 bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-950 transition hover:bg-white"
+                className="mt-5 w-full rounded-lg border border-slate-700 bg-slate-100 px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-white"
               >
                 Connect
               </button>

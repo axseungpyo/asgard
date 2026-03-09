@@ -8,20 +8,20 @@ interface HeaderProps {
 
 export default function Header({ isConnected, projectName = "Asgard", onSettingsClick }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-30 h-14 border-b border-zinc-800/60 bg-bg-primary/80 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between">
+    <header className="sticky top-0 z-30 h-14 border-b border-border/60 bg-bg-primary/80 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between">
       <div className="flex items-center gap-2.5">
-        <span className="text-[13px] font-medium text-zinc-100 font-mono">
+        <span className="text-[13px] font-medium text-slate-100 font-mono">
           Yggdrasil
         </span>
-        <span className="text-zinc-700 text-xs">/</span>
-        <span className="text-[13px] text-zinc-500 font-mono">{projectName}</span>
+        <span className="text-slate-500 text-xs">/</span>
+        <span className="text-[13px] text-slate-400 font-mono">{projectName}</span>
       </div>
 
       <div className="flex items-center gap-4 text-[13px] font-mono">
         {onSettingsClick && (
           <button
             onClick={onSettingsClick}
-            className="text-zinc-600 hover:text-zinc-300 transition"
+            className="text-slate-500 hover:text-slate-300 transition"
             title="API Keys & Settings"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -36,7 +36,7 @@ export default function Header({ isConnected, projectName = "Asgard", onSettings
               isConnected ? "bg-[#a3e635]" : "bg-[#ff6b6b]"
             }`}
           />
-          <span className={isConnected ? "text-zinc-500" : "text-[#ff6b6b]"}>
+          <span className={isConnected ? "text-slate-400" : "text-[#ff6b6b]"}>
             {isConnected ? "Live" : "Offline"}
           </span>
         </div>

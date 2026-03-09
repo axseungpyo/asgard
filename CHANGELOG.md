@@ -3,6 +3,17 @@
 이 프로젝트의 주요 변경사항을 기록합니다.
 형식: [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)
 
+## [0.3.2] - 2026-03-09
+
+### Changed
+- **Asgard Night Sky 테마** — 대시보드 전체 색상 체계 교체
+  - 배경: 순수 검정(#09090b) → 깊은 남색(#0c0f1a) 계열
+  - 텍스트: zinc → slate 팔레트 (남색 톤 회색, WCAG AA 충족)
+  - `text-zinc-700`/`text-zinc-600` 완전 제거 → `text-slate-500` 이상
+  - 상태 색상 채도/밝기 상향 (idle, running, done, draft)
+  - AgentCard에 에이전트 색상 5% 글로우 효과 추가
+  - 16개 컴포넌트 + constants.ts 일괄 적용
+
 ## [0.3.1] - 2026-03-09
 
 ### Added

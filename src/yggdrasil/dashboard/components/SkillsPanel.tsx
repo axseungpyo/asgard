@@ -217,7 +217,7 @@ export default function SkillsPanel() {
   return (
     <div className="space-y-4">
       {/* Category Tabs */}
-      <div className="flex items-center gap-px border-b border-zinc-800/60 pb-0">
+      <div className="flex items-center gap-px border-b border-border/60 pb-0">
         {CATEGORIES.map((cat) => {
           const count = cat.key === "all"
             ? SKILLS.length
@@ -230,7 +230,7 @@ export default function SkillsPanel() {
               style={{
                 color: activeCategory === cat.key
                   ? cat.key === "all" ? "#e4e4e7" : categoryColors[cat.key as Exclude<Category, "all">]
-                  : "#52525b",
+                  : "#64748b",
               }}
             >
               {cat.label}
@@ -241,14 +241,14 @@ export default function SkillsPanel() {
       </div>
 
       {/* Skills List — skills.sh leaderboard style */}
-      <div className="bg-bg-secondary border border-zinc-500/60 rounded-lg overflow-hidden">
+      <div className="bg-bg-secondary border border-border/60 rounded-lg overflow-hidden">
         {/* Header row */}
-        <div className="grid grid-cols-[2rem_7rem_1fr_6rem_1fr] gap-4 px-4 py-2 border-b border-zinc-800/60 bg-zinc-800/20">
-          <span className="text-[11px] font-mono text-zinc-600 uppercase tracking-wider">#</span>
-          <span className="text-[11px] font-mono text-zinc-600 uppercase tracking-wider">Command</span>
-          <span className="text-[11px] font-mono text-zinc-600 uppercase tracking-wider">Description</span>
-          <span className="text-[11px] font-mono text-zinc-600 uppercase tracking-wider">Agent</span>
-          <span className="text-[11px] font-mono text-zinc-600 uppercase tracking-wider">Tools</span>
+        <div className="grid grid-cols-[2rem_7rem_1fr_6rem_1fr] gap-4 px-4 py-2 border-b border-border/60 bg-bg-tertiary/20">
+          <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">#</span>
+          <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">Command</span>
+          <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">Description</span>
+          <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">Agent</span>
+          <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">Tools</span>
         </div>
 
         <div>
@@ -261,20 +261,20 @@ export default function SkillsPanel() {
             const error = errorBySkill[skill.name];
 
             return (
-              <div key={skill.name} className="border-b border-zinc-800/40 last:border-0">
+              <div key={skill.name} className="border-b border-border/40 last:border-0">
                 {/* Main row */}
-                <div className="flex items-stretch gap-3 px-4 py-3 hover:bg-zinc-800/30 transition-colors">
+                <div className="flex items-stretch gap-3 px-4 py-3 hover:bg-bg-tertiary/30 transition-colors">
                   <button
                     onClick={() => setExpanded(isOpen ? null : skill.name)}
                     className="flex-1 grid grid-cols-[2rem_7rem_1fr_6rem_1fr] gap-4 text-left items-center"
                   >
-                    <span className="text-[12px] text-zinc-700 font-mono">{i + 1}</span>
+                    <span className="text-[12px] text-slate-500 font-mono">{i + 1}</span>
 
                     <span className="font-mono text-[13px] font-medium" style={{ color: catColor }}>
                       {skill.cmd}
                     </span>
 
-                    <span className="text-[13px] text-zinc-300 truncate">{skill.description}</span>
+                    <span className="text-[13px] text-slate-300 truncate">{skill.description}</span>
 
                     <span className="text-[12px] font-mono" style={{ color: skill.agentColor }}>
                       {skill.agentLabel}
@@ -284,7 +284,7 @@ export default function SkillsPanel() {
                       {skill.tools.map((t) => (
                         <span
                           key={t}
-                          className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-800/60 text-zinc-500"
+                          className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-bg-tertiary/60 text-slate-400"
                         >
                           {t}
                         </span>
@@ -301,7 +301,7 @@ export default function SkillsPanel() {
                     className={`shrink-0 self-center h-8 px-3 rounded border text-[11px] font-mono transition-colors ${
                       canRun
                         ? "border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/10"
-                        : "border-zinc-800 text-zinc-700 cursor-not-allowed"
+                        : "border-border text-slate-500 cursor-not-allowed"
                     }`}
                   >
                     Run
@@ -310,24 +310,24 @@ export default function SkillsPanel() {
 
                 {/* Expanded detail */}
                 {isOpen && (
-                  <div className="px-4 pb-4 bg-bg-primary/50 border-t border-zinc-800/40">
+                  <div className="px-4 pb-4 bg-bg-primary/50 border-t border-border/40">
                     <div className="pt-3 space-y-2">
                       <div className="flex items-start gap-3">
-                        <span className="text-[11px] font-mono text-zinc-600 uppercase tracking-wider w-16 shrink-0 pt-0.5">Usage</span>
-                        <code className="text-[12px] font-mono text-[#67e8f9] bg-zinc-800/60 px-2 py-1 rounded">
+                        <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider w-16 shrink-0 pt-0.5">Usage</span>
+                        <code className="text-[12px] font-mono text-[#67e8f9] bg-bg-tertiary/60 px-2 py-1 rounded">
                           {skill.usage}
                         </code>
                       </div>
 
                       {skill.note && (
                         <div className="flex items-start gap-3">
-                          <span className="text-[11px] font-mono text-zinc-600 uppercase tracking-wider w-16 shrink-0 pt-0.5">Note</span>
-                          <span className="text-[12px] text-zinc-500">{skill.note}</span>
+                          <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider w-16 shrink-0 pt-0.5">Note</span>
+                          <span className="text-[12px] text-slate-400">{skill.note}</span>
                         </div>
                       )}
 
                       <div className="flex items-start gap-3">
-                        <span className="text-[11px] font-mono text-zinc-600 uppercase tracking-wider w-16 shrink-0 pt-0.5">Category</span>
+                        <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider w-16 shrink-0 pt-0.5">Category</span>
                         <span
                           className="text-[12px] font-mono px-2 py-0.5 rounded"
                           style={{ color: catColor, backgroundColor: `${catColor}15` }}
@@ -337,9 +337,9 @@ export default function SkillsPanel() {
                       </div>
 
                       {canRun && (
-                        <div className="pt-3 mt-3 border-t border-zinc-800/50 space-y-3">
+                        <div className="pt-3 mt-3 border-t border-border/50 space-y-3">
                           <div className="flex items-start gap-3">
-                            <span className="text-[11px] font-mono text-zinc-600 uppercase tracking-wider w-16 shrink-0 pt-2">Args</span>
+                            <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider w-16 shrink-0 pt-2">Args</span>
                             <div className="flex-1 space-y-2">
                               <input
                                 value={argsBySkill[skill.name] ?? ""}
@@ -348,7 +348,7 @@ export default function SkillsPanel() {
                                   [skill.name]: e.target.value,
                                 }))}
                                 placeholder={skill.name === "validate" ? "Optional: TP-008" : "Optional arguments"}
-                                className="w-full rounded border border-zinc-800 bg-zinc-950 px-3 py-2 text-[12px] font-mono text-zinc-200 outline-none focus:border-zinc-600"
+                                className="w-full rounded border border-border bg-bg-primary px-3 py-2 text-[12px] font-mono text-slate-200 outline-none focus:border-slate-500"
                               />
                               <div className="flex items-center gap-2">
                                 <button
@@ -358,7 +358,7 @@ export default function SkillsPanel() {
                                 >
                                   {isRunning ? "Running..." : "Run"}
                                 </button>
-                                <span className="text-[11px] text-zinc-600">
+                                <span className="text-[11px] text-slate-500">
                                   {skill.name === "validate" ? "빈 값이면 모든 TP를 검사합니다." : "status는 args를 무시합니다."}
                                 </span>
                               </div>
@@ -372,8 +372,8 @@ export default function SkillsPanel() {
                           )}
 
                           {result && (
-                            <div className="rounded border border-zinc-800 bg-zinc-950/80 p-3">
-                              <div className="mb-2 text-[11px] font-mono uppercase tracking-wider text-zinc-600">
+                            <div className="rounded border border-border bg-bg-primary/80 p-3">
+                              <div className="mb-2 text-[11px] font-mono uppercase tracking-wider text-slate-500">
                                 Result
                               </div>
                               <pre className="overflow-x-auto whitespace-pre-wrap break-words text-[11px] leading-5 text-cyan-200 font-mono">
@@ -392,7 +392,7 @@ export default function SkillsPanel() {
         </div>
       </div>
 
-      <p className="text-[11px] text-zinc-700 font-mono text-right">
+      <p className="text-[11px] text-slate-500 font-mono text-right">
         {filtered.length} skills · click row to expand
       </p>
     </div>

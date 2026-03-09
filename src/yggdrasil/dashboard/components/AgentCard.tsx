@@ -34,14 +34,17 @@ export default function AgentCard({ agent }: AgentCardProps) {
   }, [agent.status, agent.startedAt]);
 
   return (
-    <div className="bg-bg-secondary border border-zinc-500/60 rounded-lg p-4 hover:border-zinc-700/80/80 transition-colors">
+    <div
+      className="bg-bg-secondary border border-border/60 rounded-lg p-4 hover:border-slate-700/80 transition-colors"
+      style={{ backgroundImage: `linear-gradient(135deg, ${color}0d, transparent)` }}
+    >
       <div className="flex items-center justify-between mb-2.5">
         <div className="flex items-center gap-2">
           <span
             className="w-1 h-5 rounded-full"
             style={{ backgroundColor: color }}
           />
-          <span className="font-medium text-[14px] text-zinc-100">{agent.displayName}</span>
+          <span className="font-medium text-[14px] text-slate-100">{agent.displayName}</span>
         </div>
         <span className="flex items-center gap-1.5 text-[12px] font-mono" style={{ color: status.color }}>
           {agent.status === "running" && (
@@ -51,31 +54,31 @@ export default function AgentCard({ agent }: AgentCardProps) {
         </span>
       </div>
 
-      <div className="text-[12px] text-zinc-600 mb-3 font-mono">
+      <div className="text-[12px] text-slate-500 mb-3 font-mono">
         {config?.role ?? "Agent"} · {config?.model ?? "Unknown"}
       </div>
 
       <div className="space-y-1.5">
         {agent.currentTP ? (
           <div className="flex items-center justify-between">
-            <span className="text-zinc-600 text-[12px] font-mono">task</span>
-            <span className="font-mono text-[12px] text-zinc-400">{agent.currentTP}</span>
+            <span className="text-slate-500 text-[12px] font-mono">task</span>
+            <span className="font-mono text-[12px] text-slate-400">{agent.currentTP}</span>
           </div>
         ) : (
-          <div className="text-[12px] text-zinc-700 font-mono">No active task</div>
+          <div className="text-[12px] text-slate-500 font-mono">No active task</div>
         )}
 
         {agent.status === "running" && elapsed && (
           <div className="flex items-center justify-between">
-            <span className="text-zinc-600 text-[12px] font-mono">elapsed</span>
-            <span className="font-mono text-[12px] text-zinc-400 tabular-nums">{elapsed}</span>
+            <span className="text-slate-500 text-[12px] font-mono">elapsed</span>
+            <span className="font-mono text-[12px] text-slate-400 tabular-nums">{elapsed}</span>
           </div>
         )}
 
         {agent.mode && (
           <div className="flex items-center justify-between">
-            <span className="text-zinc-600 text-[12px] font-mono">mode</span>
-            <span className="font-mono text-[12px] text-zinc-400">{agent.mode}</span>
+            <span className="text-slate-500 text-[12px] font-mono">mode</span>
+            <span className="font-mono text-[12px] text-slate-400">{agent.mode}</span>
           </div>
         )}
       </div>

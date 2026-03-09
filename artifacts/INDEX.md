@@ -11,6 +11,7 @@ Last updated: 2026-03-09
 
 | ID | Title | Agent | Completed |
 |----|-------|-------|-----------|
+| TP-014 | Asgard Night Sky 테마 — 대시보드 가독성 개선 | codex | 2026-03-09 |
 | TP-013 | Loki 에이전트 기반 구조 + 대시보드 통합 | codex | 2026-03-09 |
 | TP-012 | WebSocket 인증 + 토큰 기반 API 보호 | codex | 2026-03-09 |
 | TP-011 | 에이전트 메트릭 수집 및 시각화 | codex | 2026-03-09 |
@@ -25,4 +26,4 @@ Last updated: 2026-03-09
 | TP-004 | 랜딩 페이지 스크린샷 분석 및 UI 클론 | gemini | 2026-03-09 |
 | TP-005 | API 문서 자동 생성 (Swagger/OpenAPI) | codex | 2026-03-09 |
 
-## Next TP Number: TP-014
+## Next TP Number: TP-015

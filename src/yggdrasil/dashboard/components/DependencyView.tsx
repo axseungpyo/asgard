@@ -8,9 +8,9 @@ interface DependencyViewProps {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  done: "#84cc16",
+  done: "#86efac",
   "in-progress": "#f59e0b",
-  draft: "#71717a",
+  draft: "#94a3b8",
   blocked: "#ef4444",
   "review-needed": "#d4d4d8",
 };
@@ -66,16 +66,16 @@ export default function DependencyView({ graph }: DependencyViewProps) {
 
   if (!graph) {
     return (
-      <div className="bg-bg-secondary border border-zinc-500/60 rounded-lg p-8 text-center">
-        <p className="text-zinc-700 text-[13px] font-mono">Loading dependency graph...</p>
+      <div className="bg-bg-secondary border border-border/60 rounded-lg p-8 text-center">
+        <p className="text-slate-500 text-[13px] font-mono">Loading dependency graph...</p>
       </div>
     );
   }
 
   if (graph.nodes.length === 0) {
     return (
-      <div className="bg-bg-secondary border border-zinc-500/60 rounded-lg p-8 text-center">
-        <p className="text-zinc-700 text-[13px] font-mono">No TP dependencies declared</p>
+      <div className="bg-bg-secondary border border-border/60 rounded-lg p-8 text-center">
+        <p className="text-slate-500 text-[13px] font-mono">No TP dependencies declared</p>
       </div>
     );
   }
@@ -90,17 +90,17 @@ export default function DependencyView({ graph }: DependencyViewProps) {
   );
 
   return (
-    <div className="bg-bg-secondary border border-zinc-500/60 rounded-lg overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-zinc-800/60">
+    <div className="bg-bg-secondary border border-border/60 rounded-lg overflow-hidden">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-border/60">
         <div>
-          <h3 className="text-[12px] font-mono font-medium text-zinc-400 uppercase tracking-wider">
+          <h3 className="text-[12px] font-mono font-medium text-slate-400 uppercase tracking-wider">
             Rune DAG
           </h3>
-          <p className="mt-1 text-[12px] text-zinc-600">
+          <p className="mt-1 text-[12px] text-slate-500">
             상태 색상과 실행 가능 TP를 함께 표시합니다.
           </p>
         </div>
-        <div className="flex items-center gap-3 text-[11px] font-mono text-zinc-500">
+        <div className="flex items-center gap-3 text-[11px] font-mono text-slate-400">
           <Legend label="done" color={STATUS_COLOR.done} />
           <Legend label="in-progress" color={STATUS_COLOR["in-progress"]} />
           <Legend label="draft" color={STATUS_COLOR.draft} />
@@ -147,7 +147,7 @@ export default function DependencyView({ graph }: DependencyViewProps) {
                   width={NODE_WIDTH}
                   height={NODE_HEIGHT}
                   rx="16"
-                  fill="rgba(24,24,27,0.94)"
+                  fill="rgba(19, 23, 41, 0.94)"
                   stroke={isReady ? "#67e8f9" : statusColor}
                   strokeWidth={isReady ? 2 : 1.25}
                 />
@@ -159,13 +159,13 @@ export default function DependencyView({ graph }: DependencyViewProps) {
                   rx="16"
                   fill={statusColor}
                 />
-                <text x="16" y="28" fill="#71717a" fontSize="11" fontFamily="monospace">
+                <text x="16" y="28" fill="#94a3b8" fontSize="11" fontFamily="monospace">
                   {node.status}
                 </text>
-                <text x="16" y="52" fill="#f4f4f5" fontSize="18" fontFamily="monospace">
+                <text x="16" y="52" fill="#f1f5f9" fontSize="18" fontFamily="monospace">
                   {node.id}
                 </text>
-                <text x="16" y="70" fill="#a1a1aa" fontSize="11" fontFamily="monospace">
+                <text x="16" y="70" fill="#94a3b8" fontSize="11" fontFamily="monospace">
                   {node.dependsOn.length === 0
                     ? "No dependencies"
                     : `Depends on ${node.dependsOn.length}`}
@@ -211,13 +211,13 @@ function DependencyEdges({
             <path
               d={`M ${startX} ${startY} C ${midX} ${startY}, ${midX} ${endY}, ${endX - 10} ${endY}`}
               fill="none"
-              stroke="#52525b"
+              stroke="#64748b"
               strokeWidth="1.5"
             />
             <path
               d={`M ${endX - 10} ${endY - 5} L ${endX} ${endY} L ${endX - 10} ${endY + 5}`}
               fill="none"
-              stroke="#52525b"
+              stroke="#64748b"
               strokeWidth="1.5"
             />
           </g>

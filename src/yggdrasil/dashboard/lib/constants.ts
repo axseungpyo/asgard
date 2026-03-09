@@ -21,17 +21,17 @@ export const AGENT_NAMES: AgentName[] = ["odin", "brokkr", "heimdall", "loki"];
 // ─── Status Configuration ───
 
 export const STATUS_CONFIG: Record<AgentStatus, { label: string; color: string }> = {
-  idle: { label: "Idle", color: "#71717a" },
-  running: { label: "Running", color: "#a78bfa" },
+  idle: { label: "Idle", color: "#9ca3af" },
+  running: { label: "Running", color: "#b197fc" },
   blocked: { label: "Blocked", color: "#ff6b6b" },
-  done: { label: "Done", color: "#a3e635" },
+  done: { label: "Done", color: "#86efac" },
 };
 
 export const TASK_STATUS_CONFIG: Record<TaskStatus, { label: string; color: string }> = {
-  draft: { label: "Draft", color: "#71717a" },
-  "in-progress": { label: "In Progress", color: "#a78bfa" },
+  draft: { label: "Draft", color: "#94a3b8" },
+  "in-progress": { label: "In Progress", color: "#b197fc" },
   "review-needed": { label: "Review", color: "#f0abfc" },
-  done: { label: "Done", color: "#a3e635" },
+  done: { label: "Done", color: "#86efac" },
   blocked: { label: "Blocked", color: "#ff6b6b" },
 };
 
