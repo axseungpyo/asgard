@@ -83,6 +83,8 @@ if $REMOTE; then
     chmod +x "$TMP_DIR/scripts/delegate-gemini.sh"
     curl -fsSL "$BASE_URL/scripts/delegate-codex.sh" -o "$TMP_DIR/scripts/delegate-codex.sh"
     chmod +x "$TMP_DIR/scripts/delegate-codex.sh"
+    curl -fsSL "$BASE_URL/scripts/archive-done.sh" -o "$TMP_DIR/scripts/archive-done.sh"
+    chmod +x "$TMP_DIR/scripts/archive-done.sh"
     echo ""
 fi
 
@@ -113,6 +115,8 @@ cp "$ASGARD_SRC/scripts/delegate-gemini.sh" "$ASGARD_HOME/scripts/delegate-gemin
 chmod +x "$ASGARD_HOME/scripts/delegate-gemini.sh"
 cp "$ASGARD_SRC/scripts/delegate-codex.sh" "$ASGARD_HOME/scripts/delegate-codex.sh"
 chmod +x "$ASGARD_HOME/scripts/delegate-codex.sh"
+cp "$ASGARD_SRC/scripts/archive-done.sh" "$ASGARD_HOME/scripts/archive-done.sh"
+chmod +x "$ASGARD_HOME/scripts/archive-done.sh"
 
 cat > "$ASGARD_HOME/templates/context.md" << 'EOF'
 # Asgard Lore — Project Context

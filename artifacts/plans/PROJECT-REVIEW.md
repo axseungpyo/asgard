@@ -170,8 +170,8 @@ Asgard는 Claude Code(Odin)를 Brain Agent로, Codex CLI(Brokkr)와 Gemini CLI(H
 
 | Priority | Task | Description | Effort | Status |
 |----------|------|-------------|--------|--------|
-| P1 | TP 버저닝 | retry 시 TP-001-v2, RP-001-attempt2 형식으로 이력 보존 | 1일 | 미진행 |
-| P1 | Completed 아카이빙 | done 상태 태스크를 Completed 테이블로 자동 이동 | 0.5일 | 미진행 |
+| P1 | TP 버저닝 | retry 시 RP-NNN-attempt{N}.md + 로그 백업으로 이력 보존 | 1일 | **v0.2.3 완료** |
+| P1 | Completed 아카이빙 | `archive-done.sh` — Active→Completed 자동 이동 + 파일 복사 | 0.5일 | **v0.2.3 완료** |
 | P2 | 의존성 그래프 | TP 간 depends-on 필드 추가, DAG 기반 실행 순서 | 3일 | 미진행 |
 | P2 | 우선순위 시스템 | TP에 priority 필드 추가, 큐 기반 실행 | 1일 | 미진행 |
 | P2 | 롤백 메커니즘 | 실패 시 git revert 기반 자동 롤백 | 2일 | 미진행 |

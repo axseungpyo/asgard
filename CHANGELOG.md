@@ -3,6 +3,17 @@
 이 프로젝트의 주요 변경사항을 기록합니다.
 형식: [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)
 
+## [0.2.3] - 2026-03-09
+
+### Added
+- **`scripts/archive-done.sh`** — done 태스크 자동 아카이빙 (Active→Completed 이동 + 파일 복사)
+- **retry 버저닝** — retry Skill에 RP-NNN-attempt{N}.md 백업 절차 추가
+- `install.sh`에 archive-done.sh 포함
+
+### Changed
+- `/review` Skill이 `archive-done.sh`를 사용하도록 업데이트
+- INDEX.md: 5개 완료 태스크를 Completed 테이블로 이동
+
 ## [0.2.2] - 2026-03-09
 
 ### Added

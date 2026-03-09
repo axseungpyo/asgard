@@ -56,10 +56,13 @@ TP의 각 AC에 대해 Saga의 "Acceptance Criteria Check"와 비교:
 1. INDEX.md: status -> `done`, Updated: {datetime}
 2. `shared/context.md`에 완료 사항 추가 (Context Digest 활용)
 3. DECISIONS.md에 중요한 결정 기록 (있는 경우)
-4. 아카이빙:
-   - `artifacts/archive/` 디렉토리 생성 (없으면)
-   - `artifacts/handoff/TP-NNN.md`, `artifacts/handoff/RP-NNN.md`를 `artifacts/archive/`로 복사 (원본 유지)
-   - INDEX.md의 Active Tasks 테이블에서 해당 행을 제거하고 Completed Tasks 테이블에 추가
+4. 아카이빙 (`scripts/archive-done.sh` 실행):
+   ```bash
+   bash scripts/archive-done.sh TP-NNN
+   ```
+   이 스크립트가 자동으로:
+   - `artifacts/handoff/TP-NNN.md`, `RP-NNN.md`를 `artifacts/archive/`로 복사
+   - INDEX.md Active Tasks에서 해당 행 제거 → Completed Tasks로 이동
 
 보고:
 ```

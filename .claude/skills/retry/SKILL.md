@@ -54,6 +54,23 @@ INDEX.md에서 해당 TP의 행을 확인하여 `retry:N` 표기 검색.
   제안: {해결 방안}
   ```
 
+### Step 3.5: 이전 결과 버저닝
+
+재시도 전, 기존 RP를 attempt 번호로 백업하여 이력을 보존한다.
+
+1. `artifacts/handoff/RP-NNN.md`가 존재하면:
+   - `artifacts/handoff/RP-NNN-attempt{N}.md`로 복사 (N = 현재 retry 횟수)
+   - 예: retry:1이면 `RP-001-attempt1.md`로 백업
+2. 관련 로그 파일도 백업:
+   - `artifacts/logs/TP-NNN-codex.log` → `artifacts/logs/TP-NNN-codex-attempt{N}.log`
+   - `artifacts/logs/TP-NNN-gemini.log` → `artifacts/logs/TP-NNN-gemini-attempt{N}.log`
+
+```bash
+# 예시
+cp artifacts/handoff/RP-001.md artifacts/handoff/RP-001-attempt1.md
+cp artifacts/logs/TP-001-codex.log artifacts/logs/TP-001-codex-attempt1.log
+```
+
 ### Step 4: Agent Target 확인 및 재실행
 
 `artifacts/handoff/TP-NNN.md` 읽기:
