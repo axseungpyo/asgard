@@ -1,6 +1,6 @@
 {
   "name": "@asgard/yggdrasil",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "private": true,
   "description": "Yggdrasil — Asgard Agent Monitoring Dashboard",
   "scripts": {

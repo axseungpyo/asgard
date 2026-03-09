@@ -53,6 +53,10 @@ export class AsgardWatcher extends EventEmitter {
       this.handleFileChange(filePath);
     });
 
+    this.watcher.on("unlink", (filePath: string) => {
+      this.fileOffsets.delete(filePath);
+    });
+
     this.watcher.on("error", (err) => {
       log("error", "File watcher error", err);
     });
@@ -134,7 +138,7 @@ export class AsgardWatcher extends EventEmitter {
       if (lines.length > 0) {
         const agent = this.agentFromFilePath(filePath);
         const logEntries: LogEntry[] = lines.map((line) => ({
-          timestamp: Date.now(),
+          timestamp: this.parseTimestamp(line),
           agent,
           message: line,
           level: this.detectLevel(line),
@@ -188,6 +192,16 @@ export class AsgardWatcher extends EventEmitter {
     return "system";
   }
 
+  private parseTimestamp(line: string): number {
+    // Try to extract YYYY-MM-DD HH:MM format from log lines
+    const match = line.match(/^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2})/);
+    if (match) {
+      const parsed = new Date(match[1]).getTime();
+      if (!isNaN(parsed)) return parsed;
+    }
+    return Date.now();
+  }
+
   private detectLevel(line: string): "info" | "warn" | "error" {
     const lower = line.toLowerCase();
     if (lower.includes("error") || lower.includes("fail")) return "error";
@@ -208,7 +222,7 @@ export class AsgardWatcher extends EventEmitter {
         const agent = this.agentFromFilePath(filePath);
         for (const line of lines) {
           entries.push({
-            timestamp: Date.now(),
+            timestamp: this.parseTimestamp(line),
             agent,
             message: line,
             level: this.detectLevel(line),

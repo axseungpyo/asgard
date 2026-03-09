@@ -10,8 +10,8 @@ export function parseIndex(content: string): Task[] {
     const trimmed = line.trim();
     if (!trimmed) continue;
 
-    // Detect table header row
-    if (trimmed.startsWith("| ID") || trimmed.startsWith("| id")) {
+    // Detect table header row (case-insensitive, flexible column order)
+    if (/^\|\s*id\s*\|/i.test(trimmed)) {
       inTable = true;
       continue;
     }
@@ -28,7 +28,6 @@ export function parseIndex(content: string): Task[] {
         .filter(Boolean);
 
       if (cells.length >= 6) {
-        const status = cells[3] as TaskStatus;
         const validStatuses: TaskStatus[] = [
           "draft",
           "in-progress",
@@ -36,11 +35,12 @@ export function parseIndex(content: string): Task[] {
           "done",
           "blocked",
         ];
+        const rawStatus = cells[3].toLowerCase() as TaskStatus;
         tasks.push({
           id: cells[0],
           title: cells[1],
           agent: cells[2],
-          status: validStatuses.includes(status) ? status : "draft",
+          status: validStatuses.includes(rawStatus) ? rawStatus : "draft",
           created: cells[4],
           updated: cells[5],
         });
@@ -64,7 +64,10 @@ export async function parseDocument(
       title: titleMatch ? titleMatch[1].trim() : "Untitled",
       content,
     };
-  } catch {
+  } catch (err: unknown) {
+    if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
+      console.error(`[Parser] Failed to read document: ${filePath}`, (err as Error).message);
+    }
     return { title: "Untitled", content: "" };
   }
 }

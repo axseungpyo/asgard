@@ -3,6 +3,21 @@
 이 프로젝트의 주요 변경사항을 기록합니다.
 형식: [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)
 
+## [0.2.2] - 2026-03-09
+
+### Added
+- **동시 실행 Lock** — `mkdir` 기반 atomic lock (stale lock 자동 회수, macOS/Linux 호환)
+- **로그 로테이션** — `execution.log` 1MB 초과 시 자동 로테이션 (최대 5개 백업)
+- **태스크 검색/필터** — Chronicle에 텍스트 검색 + 6개 상태 필터 버튼
+- **브라우저 알림** — 에이전트 done/blocked 전환 시 Notification API 알림
+- `watcher.ts` 로그 타임스탬프 파싱 (`YYYY-MM-DD HH:MM` 추출)
+- `watcher.ts` `unlink` 이벤트로 stale fileOffsets 자동 정리
+
+### Changed
+- `parseIndex()` 테이블 헤더 감지: case-insensitive 정규식으로 개선
+- `parseIndex()` status 필드 `toLowerCase()` 적용
+- `parseDocument()` 빈 catch → ENOENT 구분 에러 로깅
+
 ## [0.2.1] - 2026-03-09
 
 ### Added

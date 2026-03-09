@@ -1,6 +1,7 @@
 "use client";
 
-import type { Task } from "../lib/types";
+import { useState, useMemo } from "react";
+import type { Task, TaskStatus } from "../lib/types";
 import { TASK_STATUS_CONFIG, AGENT_CONFIG } from "../lib/constants";
 
 interface ChronicleProps {
@@ -14,7 +15,36 @@ const agentConfig: Record<string, { color: string; label: string }> = {
   odin: { color: AGENT_CONFIG.odin.color, label: AGENT_CONFIG.odin.displayName },
 };
 
+const STATUS_FILTERS: { value: TaskStatus | "all"; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "in-progress", label: "In Progress" },
+  { value: "review-needed", label: "Review" },
+  { value: "blocked", label: "Blocked" },
+  { value: "done", label: "Done" },
+  { value: "draft", label: "Draft" },
+];
+
 export default function Chronicle({ tasks, onDocClick }: ChronicleProps) {
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<TaskStatus | "all">("all");
+
+  const filteredTasks = useMemo(() => {
+    let result = tasks;
+    if (statusFilter !== "all") {
+      result = result.filter((t) => t.status === statusFilter);
+    }
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (t) =>
+          t.id.toLowerCase().includes(q) ||
+          t.title.toLowerCase().includes(q) ||
+          t.agent.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [tasks, search, statusFilter]);
+
   const doneTasks = tasks.filter((t) => t.status === "done").length;
 
   return (
@@ -26,14 +56,43 @@ export default function Chronicle({ tasks, onDocClick }: ChronicleProps) {
         )}
       </div>
 
+      {tasks.length > 0 && (
+        <div className="flex items-center gap-2 px-3 py-2 border-b border-zinc-800/40">
+          <input
+            type="text"
+            placeholder="Search tasks..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-1 bg-zinc-900/50 border border-zinc-700/50 rounded px-2 py-1 text-[12px] font-mono text-zinc-300 placeholder-zinc-600 outline-none focus:border-zinc-500/60"
+          />
+          <div className="flex gap-1">
+            {STATUS_FILTERS.map((f) => (
+              <button
+                key={f.value}
+                onClick={() => setStatusFilter(f.value)}
+                className={`px-2 py-0.5 rounded text-[10px] font-mono transition-colors ${
+                  statusFilter === f.value
+                    ? "bg-zinc-700 text-zinc-200"
+                    : "text-zinc-500 hover:text-zinc-400"
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="p-1.5">
-        {tasks.length === 0 ? (
+        {filteredTasks.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-zinc-700 text-[13px] font-mono">No tasks recorded</p>
+            <p className="text-zinc-700 text-[13px] font-mono">
+              {tasks.length === 0 ? "No tasks recorded" : "No matching tasks"}
+            </p>
           </div>
         ) : (
           <div className="space-y-px">
-            {tasks.map((task) => {
+            {filteredTasks.map((task) => {
               const idNum = task.id.replace(/\D/g, "");
               const sc = TASK_STATUS_CONFIG[task.status];
               const ac = agentConfig[task.agent.toLowerCase()] ?? { color: "#a1a1aa", label: task.agent };

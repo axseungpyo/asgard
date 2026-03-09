@@ -93,6 +93,41 @@ fi
 # ─── 로그 디렉토리 확인 ───
 mkdir -p artifacts/logs
 
+# ─── 동시 실행 Lock ───
+LOCK_DIR="artifacts/logs/.brokkr.lock"
+if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+    LOCK_PID=$(cat "$LOCK_DIR/pid" 2>/dev/null || echo "unknown")
+    if [ "$LOCK_PID" != "unknown" ] && kill -0 "$LOCK_PID" 2>/dev/null; then
+        echo -e "${RED}Error: Brokkr is already running (PID: ${LOCK_PID}).${NC}"
+        echo "   Wait for it to finish or kill it: kill $LOCK_PID"
+        exit 1
+    else
+        echo -e "${YELLOW}Warning: Stale lock detected (PID: ${LOCK_PID}). Reclaiming.${NC}"
+        rm -rf "$LOCK_DIR"
+        mkdir "$LOCK_DIR"
+    fi
+fi
+echo $$ > "$LOCK_DIR/pid"
+
+# ─── 로그 로테이션 ───
+MAX_EXEC_LOG_SIZE=1048576  # 1MB
+MAX_EXEC_LOG_FILES=5
+rotate_log() {
+    local logfile="$1"
+    [ ! -f "$logfile" ] && return
+    local size
+    size=$(wc -c < "$logfile" 2>/dev/null || echo 0)
+    if [ "$size" -gt "$MAX_EXEC_LOG_SIZE" ]; then
+        for i in $(seq $((MAX_EXEC_LOG_FILES - 1)) -1 1); do
+            [ -f "${logfile}.${i}" ] && mv "${logfile}.${i}" "${logfile}.$((i + 1))"
+        done
+        mv "$logfile" "${logfile}.1"
+        : > "$logfile"
+        echo "$(date '+%Y-%m-%d %H:%M') [system] Log rotated (was ${size} bytes)" >> "$logfile"
+    fi
+}
+rotate_log "$LOG_FILE"
+
 # ─── 프롬프트 구성 ───
 RAGNAROK_LINE=""
 if [ "$COMPLEXITY" = "extreme" ]; then
@@ -195,6 +230,8 @@ cleanup() {
     [ -n "$CODEX_PID" ] && kill -TERM "$CODEX_PID" 2>/dev/null || true
     # PID 파일 삭제
     rm -f "artifacts/logs/.brokkr.pid"
+    # Lock 해제
+    rm -rf "$LOCK_DIR"
 }
 trap cleanup EXIT
 

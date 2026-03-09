@@ -149,45 +149,45 @@ Asgard는 Claude Code(Odin)를 Brain Agent로, Codex CLI(Brokkr)와 Gemini CLI(H
 | P0 | 테스트 프레임워크 | Vitest 도입, parser/agents/constants 단위 테스트 20개 | 2일 | **v0.2.1 완료** |
 | P0 | 에러 핸들링 개선 | 빈 catch 14건 제거, ENOENT/EPERM 구분, 구조화된 로깅 | 1일 | **v0.2.1 완료** |
 | P0 | 설정 중앙화 | constants.ts 생성, 8개 파일 중복 제거 | 0.5일 | **v0.2.1 완료** |
-| P1 | 동시 실행 Lock | flock 기반 에이전트 동시 실행 방지 | 1일 | 미진행 |
-| P1 | 로그 로테이션 | 로그 파일 크기 제한 + 로테이션 | 0.5일 | 미진행 |
+| P1 | 동시 실행 Lock | mkdir 기반 에이전트 동시 실행 방지 (stale lock 자동 회수) | 1일 | **v0.2.2 완료** |
+| P1 | 로그 로테이션 | execution.log 1MB 초과 시 자동 로테이션 (최대 5개) | 0.5일 | **v0.2.2 완료** |
 | P1 | WS 인증 | 토큰 기반 WebSocket 인증 (로컬 토큰 파일) | 1일 | → Phase 5 이동 |
 
 ### Phase 3: 대시보드 고도화 (Dashboard v2)
 
-| Priority | Task | Description | Effort |
-|----------|------|-------------|--------|
-| P1 | ESC 키보드 핸들러 | DocViewer에 ESC 키 닫기 추가 | 0.5시간 |
-| P1 | 태스크 검색/필터 | Chronicle 검색 + 상태 필터 | 1일 |
-| P1 | 알림 시스템 | 에이전트 완료/실패 시 브라우저 알림 | 0.5일 |
-| P2 | 실행 흐름 시각화 | TP → Agent → RP 파이프라인 시각도 | 2일 |
-| P2 | Skill 실행 UI | 대시보드에서 직접 /plan, /delegate 트리거 | 3일 |
-| P2 | 비교 뷰어 | TP와 RP를 나란히 비교 표시 | 1일 |
-| P3 | 모바일 반응형 | 태블릿/모바일 레이아웃 최적화 | 2일 |
-| P3 | 통계 대시보드 | 태스크 완료율, 평균 소요시간, 에이전트별 성과 | 2일 |
+| Priority | Task | Description | Effort | Status |
+|----------|------|-------------|--------|--------|
+| P1 | ESC 키보드 핸들러 | DocViewer에 ESC 키 닫기 추가 | 0.5시간 | **v0.2.1 완료** |
+| P1 | 태스크 검색/필터 | Chronicle 검색 + 상태 필터 | 1일 | **v0.2.2 완료** |
+| P1 | 알림 시스템 | 에이전트 완료/실패 시 브라우저 Notification | 0.5일 | **v0.2.2 완료** |
+| P2 | 실행 흐름 시각화 | TP → Agent → RP 파이프라인 시각도 | 2일 | 미진행 |
+| P2 | Skill 실행 UI | 대시보드에서 직접 /plan, /delegate 트리거 | 3일 | 미진행 |
+| P2 | 비교 뷰어 | TP와 RP를 나란히 비교 표시 | 1일 | 미진행 |
+| P3 | 모바일 반응형 | 태블릿/모바일 레이아웃 최적화 | 2일 | 미진행 |
+| P3 | 통계 대시보드 | 태스크 완료율, 평균 소요시간, 에이전트별 성과 | 2일 | 미진행 |
 
 ### Phase 4: 프로토콜 확장 (Protocol v2)
 
-| Priority | Task | Description | Effort |
-|----------|------|-------------|--------|
-| P1 | TP 버저닝 | retry 시 TP-001-v2, RP-001-attempt2 형식으로 이력 보존 | 1일 |
-| P1 | Completed 아카이빙 | done 상태 태스크를 Completed 테이블로 자동 이동 | 0.5일 |
-| P2 | 의존성 그래프 | TP 간 depends-on 필드 추가, DAG 기반 실행 순서 | 3일 |
-| P2 | 우선순위 시스템 | TP에 priority 필드 추가, 큐 기반 실행 | 1일 |
-| P2 | 롤백 메커니즘 | 실패 시 git revert 기반 자동 롤백 | 2일 |
-| P3 | Loki 에이전트 | 이미지 생성 전문 에이전트 (Nano Banana API) | 3일 |
-| P3 | 멀티 프로젝트 | 하나의 Yggdrasil에서 여러 프로젝트 관리 | 5일 |
+| Priority | Task | Description | Effort | Status |
+|----------|------|-------------|--------|--------|
+| P1 | TP 버저닝 | retry 시 TP-001-v2, RP-001-attempt2 형식으로 이력 보존 | 1일 | 미진행 |
+| P1 | Completed 아카이빙 | done 상태 태스크를 Completed 테이블로 자동 이동 | 0.5일 | 미진행 |
+| P2 | 의존성 그래프 | TP 간 depends-on 필드 추가, DAG 기반 실행 순서 | 3일 | 미진행 |
+| P2 | 우선순위 시스템 | TP에 priority 필드 추가, 큐 기반 실행 | 1일 | 미진행 |
+| P2 | 롤백 메커니즘 | 실패 시 git revert 기반 자동 롤백 | 2일 | 미진행 |
+| P3 | Loki 에이전트 | 이미지 생성 전문 에이전트 (Nano Banana API) | 3일 | 미진행 |
+| P3 | 멀티 프로젝트 | 하나의 Yggdrasil에서 여러 프로젝트 관리 | 5일 | 미진행 |
 
 ### Phase 5: 운영 (Operations)
 
-| Priority | Task | Description | Effort |
-|----------|------|-------------|--------|
-| P1 | 헬스체크 API | `GET /api/health` 엔드포인트 추가 | 0.5시간 |
-| P2 | Docker 지원 | Dockerfile + docker-compose.yml | 1일 |
-| P2 | CI/CD | GitHub Actions: 린트 + 테스트 + 빌드 검증 | 1일 |
-| P2 | 구조화된 로깅 | Winston/Pino 도입, JSON 로그 포맷 | 1일 |
-| P3 | 원격 접속 | HTTPS + WSS + 기본 인증 | 2일 |
-| P3 | 메트릭 수집 | 에이전트 실행 시간, 성공률 등 수집 + 시각화 | 3일 |
+| Priority | Task | Description | Effort | Status |
+|----------|------|-------------|--------|--------|
+| P1 | 헬스체크 API | `GET /api/health` 엔드포인트 추가 | 0.5시간 | **v0.2.1 완료** |
+| P2 | Docker 지원 | Dockerfile + docker-compose.yml | 1일 | 미진행 |
+| P2 | CI/CD | GitHub Actions: 린트 + 테스트 + 빌드 검증 | 1일 | 미진행 |
+| P2 | 구조화된 로깅 | Winston/Pino 도입, JSON 로그 포맷 | 1일 | 미진행 |
+| P3 | 원격 접속 | HTTPS + WSS + 기본 인증 | 2일 | 미진행 |
+| P3 | 메트릭 수집 | 에이전트 실행 시간, 성공률 등 수집 + 시각화 | 3일 | 미진행 |
 
 ---
 

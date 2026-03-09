@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import type { AgentState, Task, LogEntry, WSMessage, AgentName } from "../lib/types";
 import { useWebSocket } from "../lib/websocket";
 import { AGENT_CONFIG, AGENT_NAMES, getWsBase, MAX_LOGS } from "../lib/constants";
@@ -74,6 +74,34 @@ export default function DashboardPage() {
     if (msg.type === "status") setAgents(msg.data);
     else if (msg.type === "chronicle") setTasks(msg.data);
   }, [statusMsg]);
+
+  // Browser notifications for agent state changes
+  const prevAgentsRef = useRef<AgentState[]>(defaultAgents);
+  useEffect(() => {
+    const prev = prevAgentsRef.current;
+    for (const agent of agents) {
+      const prevAgent = prev.find((a) => a.name === agent.name);
+      if (!prevAgent || prevAgent.status === agent.status) continue;
+
+      // Notify on completion or failure
+      if (agent.status === "done" || agent.status === "blocked") {
+        if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+          new Notification(`${agent.displayName} — ${agent.status === "done" ? "Task Complete" : "Blocked"}`, {
+            body: agent.currentTP ? `${agent.currentTP}` : undefined,
+            tag: `asgard-${agent.name}`,
+          });
+        }
+      }
+    }
+    prevAgentsRef.current = agents;
+  }, [agents]);
+
+  // Request notification permission once
+  useEffect(() => {
+    if (typeof Notification !== "undefined" && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, []);
 
   const handleDocClick = useCallback(
     (type: "tp" | "rp", id: string) => setSelectedDoc({ type, id }),
@@ -181,7 +209,7 @@ export default function DashboardPage() {
       </main>
 
       <footer className="border-t border-zinc-800/40 px-6 py-4 text-center mt-10">
-        <span className="text-[13px] text-zinc-700 font-mono tracking-wide">yggdrasil v0.2.0</span>
+        <span className="text-[13px] text-zinc-700 font-mono tracking-wide">yggdrasil v0.2.2</span>
       </footer>
 
       {selectedDoc && (
