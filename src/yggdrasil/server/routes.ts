@@ -4,6 +4,7 @@ import fs from "fs/promises";
 import { parseIndex, parseDocument } from "./parser";
 import { getAgentStates } from "./agents";
 import { createLogger } from "./logger";
+import { collectMetrics } from "./metrics";
 import {
   buildDependencyGraph,
   detectCycle,
@@ -275,6 +276,17 @@ export function createRouter(asgardRoot: string): Router {
     } catch (err: unknown) {
       log.error({ err }, "/api/dependency-graph error");
       res.status(500).json({ error: "Failed to get dependency graph" });
+    }
+  });
+
+  // GET /api/metrics
+  router.get("/api/metrics", async (_req: Request, res: Response) => {
+    try {
+      const metrics = await collectMetrics(asgardRoot);
+      res.json(metrics);
+    } catch (err: unknown) {
+      log.error({ err }, "/api/metrics error");
+      res.status(500).json({ error: "Failed to get metrics" });
     }
   });
 

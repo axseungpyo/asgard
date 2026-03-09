@@ -3,6 +3,15 @@
 이 프로젝트의 주요 변경사항을 기록합니다.
 형식: [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)
 
+## [0.2.8] - 2026-03-09
+
+### Added
+- **에이전트 메트릭 수집 및 시각화** — execution.log + INDEX.md 기반 메트릭 파싱
+  - `server/metrics.ts` — collectMetrics() (성공률, 평균 실행 시간, 일별 완료 수)
+  - `GET /api/metrics` 엔드포인트
+  - `MetricsPanel.tsx` — CSS 바 차트, 일별 완료 차트, 최근 실행 이력 테이블
+  - Stats 탭 확장, 단위 테스트 4개 추가 (총 30개)
+
 ## [0.2.7] - 2026-03-09
 
 ### Added

@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import type { AgentState, Task, LogEntry, WSMessage, AgentName } from "../lib/types";
+import type {
+  AgentState,
+  Task,
+  LogEntry,
+  WSMessage,
+  AgentName,
+  MetricsResponse,
+} from "../lib/types";
 import { useWebSocket } from "../lib/websocket";
 import { AGENT_CONFIG, AGENT_NAMES, getWsBase, MAX_LOGS } from "../lib/constants";
 import Header from "../components/Header";
@@ -36,6 +43,7 @@ export default function DashboardPage() {
   const [agents, setAgents] = useState<AgentState[]>(defaultAgents);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [metrics, setMetrics] = useState<MetricsResponse | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("overview");
   const [dependencyGraph, setDependencyGraph] = useState<DependencyGraphResponse | null>(null);
   const [selectedDoc, setSelectedDoc] = useState<{
@@ -68,6 +76,13 @@ export default function DashboardPage() {
         if (data.nodes && data.executionOrder) setDependencyGraph(data);
       })
       .catch((err) => console.warn("[Dashboard] Failed to fetch dependency graph:", err.message));
+
+    fetch("/api/metrics")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.agents && data.daily && data.recentExecutions) setMetrics(data);
+      })
+      .catch((err) => console.warn("[Dashboard] Failed to fetch metrics:", err.message));
   }, []);
 
   useEffect(() => {
@@ -191,7 +206,7 @@ export default function DashboardPage() {
             <h2 className="text-[13px] font-mono font-medium text-zinc-500 uppercase tracking-[0.15em] mb-4">
               Stats
             </h2>
-            <StatsPanel tasks={tasks} />
+            <StatsPanel tasks={tasks} metrics={metrics} />
           </section>
         ) : viewMode === "overview" ? (
           <div className="space-y-10">
@@ -248,7 +263,7 @@ export default function DashboardPage() {
       </main>
 
       <footer className="border-t border-zinc-800/40 px-6 py-4 text-center mt-10">
-        <span className="text-[13px] text-zinc-700 font-mono tracking-wide">yggdrasil v0.2.6</span>
+        <span className="text-[13px] text-zinc-700 font-mono tracking-wide">yggdrasil v0.2.8</span>
       </footer>
 
       {selectedDoc && (

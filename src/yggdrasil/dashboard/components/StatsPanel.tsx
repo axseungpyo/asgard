@@ -1,11 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
-import type { Task } from "../lib/types";
+import type { MetricsResponse, Task } from "../lib/types";
 import { AGENT_CONFIG, TASK_STATUS_CONFIG } from "../lib/constants";
+import MetricsPanel from "./MetricsPanel";
 
 interface StatsPanelProps {
   tasks: Task[];
+  metrics: MetricsResponse | null;
 }
 
 const agentDisplayMap: Record<string, { label: string; color: string }> = {
@@ -16,7 +18,7 @@ const agentDisplayMap: Record<string, { label: string; color: string }> = {
   gemini: { label: AGENT_CONFIG.heimdall.displayName, color: AGENT_CONFIG.heimdall.color },
 };
 
-export default function StatsPanel({ tasks }: StatsPanelProps) {
+export default function StatsPanel({ tasks, metrics }: StatsPanelProps) {
   const stats = useMemo(() => {
     const total = tasks.length;
     const completed = tasks.filter((task) => task.status === "done").length;
@@ -96,6 +98,8 @@ export default function StatsPanel({ tasks }: StatsPanelProps) {
           </div>
         </div>
       </div>
+
+      <MetricsPanel metrics={metrics} />
     </div>
   );
 }

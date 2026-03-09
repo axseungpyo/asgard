@@ -59,6 +59,34 @@ export interface ChronicleResponse {
   tasks: Task[];
 }
 
+export interface AgentMetric {
+  name: string;
+  totalTasks: number;
+  completed: number;
+  blocked: number;
+  successRate: number;
+  avgDuration: number;
+}
+
+export interface DailyMetric {
+  date: string;
+  count: number;
+}
+
+export interface RecentExecution {
+  agent: string;
+  tp: string;
+  duration: number;
+  result: string;
+  timestamp: string;
+}
+
+export interface MetricsResponse {
+  agents: AgentMetric[];
+  daily: DailyMetric[];
+  recentExecutions: RecentExecution[];
+}
+
 export interface DocumentResponse {
   type: "tp" | "rp";
   id: string;
