@@ -29,6 +29,7 @@ export class AsgardWatcher extends EventEmitter {
       path.join(artifactsDir, "handoff", "*.md"),
       path.join(artifactsDir, "logs", ".brokkr.pid"),
       path.join(artifactsDir, "logs", ".heimdall.pid"),
+      path.join(artifactsDir, "logs", ".loki.pid"),
     ];
 
     await this.initialLoadLogs(path.join(artifactsDir, "logs"));
@@ -179,9 +180,10 @@ export class AsgardWatcher extends EventEmitter {
 
   private agentFromFilePath(filePath: string): AgentName | "system" {
     const basename = path.basename(filePath, ".log").toLowerCase();
-    if (basename === "odin" || basename === "brokkr" || basename === "heimdall") {
-      return basename;
-    }
+    if (basename === "odin" || basename.endsWith("-odin")) return "odin";
+    if (basename === "brokkr" || basename.endsWith("-brokkr") || basename.endsWith("-codex")) return "brokkr";
+    if (basename === "heimdall" || basename.endsWith("-heimdall") || basename.endsWith("-gemini")) return "heimdall";
+    if (basename === "loki" || basename.endsWith("-loki")) return "loki";
     return "system";
   }
 

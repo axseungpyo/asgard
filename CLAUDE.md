@@ -58,7 +58,8 @@ Brokkr(Codex CLI)와 Heimdall(Gemini CLI)에게 위임한다.
 | 테스트/빌드 | Brokkr (Codex) | /delegate | test, 빌드, 린트, 검증 |
 | 코드 리뷰 | Brokkr (Codex) | /delegate | 리뷰, review, 리팩토링 |
 | 이미지/스크린샷 분석 | Heimdall (Gemini) | /delegate-gemini | 이미지 분석, 스크린샷, 비전 |
-| 이미지 생성/편집 | Heimdall (Gemini) | /delegate-gemini | 이미지 생성, 그림, 디자인 생성 |
+| 이미지 생성/편집 | Loki (Image Gen) | /delegate-loki | 이미지 생성, 그림, 디자인 생성 |
+| 이미지 분석/편집 보조 | Heimdall (Gemini) | /delegate-gemini | 스크린샷 분석, 비전 추론, 멀티모달 편집 |
 | 문서/PDF 분석 | Heimdall (Gemini) | /delegate-gemini | PDF, OCR, 문서 분석 |
 | 웹 리서치 | Heimdall (Gemini) | /delegate-gemini | 검색, 리서치, 조사 |
 | UI -> 코드 체인 | Heimdall + Brokkr | /chain | 스크린샷 보고 구현, UI 클론 |
@@ -86,6 +87,10 @@ Heimdall (Gemini CLI):
   Glint       [Flash-Lite] — 빠른 OCR/분류
   Bifrost     [3.1 Pro]    — 정밀 분석 (기본)
   Gjallarhorn [Pro Image]  — 이미지 생성/편집
+
+Loki (Image Gen):
+  Sketch    [Fast]      — 빠른 스케치, mock/placeholder 생성
+  Canvas    [Standard]  — 정밀 이미지 생성 (API 연동 후)
 ```
 
 ## Available Skills
@@ -93,6 +98,7 @@ Heimdall (Gemini CLI):
 - `/plan` — Rune(TP-NNN.md) 생성
 - `/delegate TP-NNN` — Brokkr(Codex)에 코드 작업 위임
 - `/delegate-gemini TP-NNN` — Heimdall(Gemini)에 비전/생성 작업 위임
+- `/delegate-loki TP-NNN` — Loki(Image Gen)에 이미지 생성 작업 위임
 - `/chain "요청"` — Heimdall 분석 -> Brokkr 구현 체인
 - `/scout "질문"` — Claude 서브에이전트 병렬 탐색/리서치
 - `/scout verify RP-NNN` — Saga(RP)의 AC를 병렬 검증

@@ -12,6 +12,7 @@ const agentDisplayMap: Record<string, { label: string; color: string }> = {
   brokkr: { label: AGENT_CONFIG.brokkr.displayName, color: AGENT_CONFIG.brokkr.color },
   heimdall: { label: AGENT_CONFIG.heimdall.displayName, color: AGENT_CONFIG.heimdall.color },
   odin: { label: AGENT_CONFIG.odin.displayName, color: AGENT_CONFIG.odin.color },
+  loki: { label: AGENT_CONFIG.loki.displayName, color: AGENT_CONFIG.loki.color },
 };
 
 export default function MetricsPanel({ metrics }: MetricsPanelProps) {

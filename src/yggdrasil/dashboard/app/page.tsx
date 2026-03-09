@@ -262,7 +262,7 @@ export default function DashboardPage() {
 
             <section>
               <h2 className="text-[13px] font-mono font-medium text-zinc-500 uppercase tracking-[0.15em] mb-4">Agents</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
                 {agents.map((agent) => (
                   <AgentCard key={agent.name} agent={agent} />
                 ))}
@@ -280,7 +280,7 @@ export default function DashboardPage() {
           <div className="space-y-10">
             <section>
               <h2 className="text-[13px] font-mono font-medium text-zinc-500 uppercase tracking-[0.15em] mb-4">Agents</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
                 {agents.map((agent) => (
                   <AgentCard key={agent.name} agent={agent} />
                 ))}
@@ -289,7 +289,7 @@ export default function DashboardPage() {
 
             <section>
               <h2 className="text-[13px] font-mono font-medium text-zinc-500 uppercase tracking-[0.15em] mb-4">Terminals</h2>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4 gap-3">
                 {AGENT_NAMES.map((name) => {
                   const cfg = AGENT_CONFIG[name];
                   return (

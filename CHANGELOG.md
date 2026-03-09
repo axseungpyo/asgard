@@ -3,6 +3,17 @@
 이 프로젝트의 주요 변경사항을 기록합니다.
 형식: [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)
 
+## [0.3.0] - 2026-03-09
+
+### Added
+- **Loki 에이전트** — 4번째 에이전트 (이미지 생성) 기반 인프라
+  - `constants.ts`/`types.ts`에 Loki 등록 (보라색 #a855f7)
+  - `scripts/delegate-loki.sh` — mock 위임 (Lock, Watchdog, 로그 로테이션)
+  - `/delegate-loki` Skill 정의
+  - 서버 PID/로그 감시에 Loki 추가 (`agents.ts`, `watcher.ts`)
+  - 대시보드 4-agent 레이아웃 (Overview, Terminals, Flow, Stats)
+  - CLAUDE.md/AGENTS.md에 Loki 라우팅/모드 문서 추가
+
 ## [0.2.9] - 2026-03-09
 
 ### Added

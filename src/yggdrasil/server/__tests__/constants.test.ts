@@ -2,8 +2,8 @@ import { describe, it, expect } from "vitest";
 import { AGENT_CONFIG, AGENT_NAMES, STATUS_CONFIG, TASK_STATUS_CONFIG, MAX_LOGS } from "../../dashboard/lib/constants";
 
 describe("constants", () => {
-  it("AGENT_NAMES contains all 3 agents", () => {
-    expect(AGENT_NAMES).toEqual(["odin", "brokkr", "heimdall"]);
+  it("AGENT_NAMES contains all 4 agents", () => {
+    expect(AGENT_NAMES).toEqual(["odin", "brokkr", "heimdall", "loki"]);
   });
 
   it("AGENT_CONFIG has entries for all agents", () => {

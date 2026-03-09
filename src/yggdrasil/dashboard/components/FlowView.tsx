@@ -12,6 +12,7 @@ const agentDisplayMap: Record<string, { label: string; color: string }> = {
   odin: { label: AGENT_CONFIG.odin.displayName, color: AGENT_CONFIG.odin.color },
   brokkr: { label: AGENT_CONFIG.brokkr.displayName, color: AGENT_CONFIG.brokkr.color },
   heimdall: { label: AGENT_CONFIG.heimdall.displayName, color: AGENT_CONFIG.heimdall.color },
+  loki: { label: AGENT_CONFIG.loki.displayName, color: AGENT_CONFIG.loki.color },
   codex: { label: AGENT_CONFIG.brokkr.displayName, color: AGENT_CONFIG.brokkr.color },
   gemini: { label: AGENT_CONFIG.heimdall.displayName, color: AGENT_CONFIG.heimdall.color },
 };

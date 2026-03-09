@@ -49,6 +49,7 @@ export async function getAgentStates(
   const pidFiles: Record<string, string> = {
     brokkr: path.join(logsDir, ".brokkr.pid"),
     heimdall: path.join(logsDir, ".heimdall.pid"),
+    loki: path.join(logsDir, ".loki.pid"),
   };
 
   const states: AgentState[] = [];
@@ -74,7 +75,7 @@ export async function getAgentStates(
       currentTP = inProgressTask.id;
     }
 
-    // Check PID file for brokkr and heimdall
+    // Check PID file for runnable agents
     if (name !== "odin" && pidFiles[name]) {
       const pidInfo = await readPidFile(pidFiles[name]);
       if (pidInfo && isProcessAlive(pidInfo.pid)) {

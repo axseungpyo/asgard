@@ -90,15 +90,23 @@ TP의 스펙 밖에서 임의로 판단하지 않는다.
 
 ---
 
-## Loki (향후 추가 예정) — Hands-Image
+## Loki — Hands-Image
 
 > *"형태를 바꾸는 것이 나의 힘이다. 하지만 Odin의 룬 없이는 움직이지 않는다."*
 
 | 항목 | 내용 |
 |------|------|
-| **잠재적 실체** | Nano Banana API (이미지 생성/편집) |
+| **현재 실체** | 이미지 생성 에이전트 인프라 (mock execution) |
+| **잠재적 실체** | Nano Banana API 등 이미지 생성/편집 백엔드 |
 | **역할** | 텍스트→이미지 생성, 이미지 편집/변환, 스타일 트랜스퍼 |
-| **트리거 조건** | 이미지 생성 전문 API 통합 시 활성화 |
+| **트리거 조건** | `/delegate-loki TP-NNN` 또는 Loki 대상 TP |
+
+### Modes
+
+| Mode | Use Case |
+|------|----------|
+| Sketch | 빠른 스케치, placeholder 생성, mock 흐름 |
+| Canvas | 정밀 이미지 생성, 실제 API 연동 후 사용 |
 
 ---
 

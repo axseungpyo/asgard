@@ -14,10 +14,10 @@ describe("getAgentStates", () => {
     vi.clearAllMocks();
   });
 
-  it("returns all 3 agents", async () => {
+  it("returns all 4 agents", async () => {
     const states = await getAgentStates("/fake/root", []);
-    expect(states).toHaveLength(3);
-    expect(states.map((s) => s.name)).toEqual(["odin", "brokkr", "heimdall"]);
+    expect(states).toHaveLength(4);
+    expect(states.map((s) => s.name)).toEqual(["odin", "brokkr", "heimdall", "loki"]);
   });
 
   it("all agents idle when no tasks", async () => {
@@ -41,6 +41,10 @@ describe("getAgentStates", () => {
     const heimdall = states.find((s) => s.name === "heimdall")!;
     expect(heimdall.displayName).toBe("Heimdall");
     expect(heimdall.color).toBe("#4285f4");
+
+    const loki = states.find((s) => s.name === "loki")!;
+    expect(loki.displayName).toBe("Loki");
+    expect(loki.color).toBe("#a855f7");
   });
 
   it("reflects blocked task status", async () => {

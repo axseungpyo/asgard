@@ -1,4 +1,4 @@
-export type AgentName = "odin" | "brokkr" | "heimdall";
+export type AgentName = "odin" | "brokkr" | "heimdall" | "loki";
 
 export type AgentStatus = "idle" | "running" | "blocked" | "done";
 
