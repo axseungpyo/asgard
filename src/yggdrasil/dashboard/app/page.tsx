@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import type { AgentState, Task, LogEntry, WSMessage, AgentName } from "../lib/types";
 import { useWebSocket } from "../lib/websocket";
+import { AGENT_CONFIG, AGENT_NAMES, getWsBase, MAX_LOGS } from "../lib/constants";
 import Header from "../components/Header";
 import AgentCard from "../components/AgentCard";
 import Chronicle from "../components/Chronicle";
@@ -11,26 +12,20 @@ import DocViewer from "../components/DocViewer";
 import TerminalPanel from "../components/TerminalPanel";
 import SkillsPanel from "../components/SkillsPanel";
 
-const MAX_LOGS = 500;
+const WS_BASE = getWsBase();
 
-const WS_BASE =
-  typeof window !== "undefined"
-    ? `ws://${window.location.hostname}:7777`
-    : "ws://localhost:7777";
-
-const defaultAgents: AgentState[] = [
-  { name: "odin", displayName: "Odin", status: "idle", currentTP: null, mode: null, startedAt: null, pid: null, color: "#d97757" },
-  { name: "brokkr", displayName: "Brokkr", status: "idle", currentTP: null, mode: null, startedAt: null, pid: null, color: "#10a37f" },
-  { name: "heimdall", displayName: "Heimdall", status: "idle", currentTP: null, mode: null, startedAt: null, pid: null, color: "#4285f4" },
-];
+const defaultAgents: AgentState[] = AGENT_NAMES.map((name) => ({
+  name,
+  displayName: AGENT_CONFIG[name].displayName,
+  status: "idle" as const,
+  currentTP: null,
+  mode: null,
+  startedAt: null,
+  pid: null,
+  color: AGENT_CONFIG[name].color,
+}));
 
 type ViewMode = "overview" | "terminals" | "skills";
-
-const AGENT_TERMINALS: { name: AgentName; displayName: string; model: string; color: string }[] = [
-  { name: "odin", displayName: "Odin", model: "Claude Opus 4.6", color: "#d97757" },
-  { name: "brokkr", displayName: "Brokkr", model: "GPT-5.4", color: "#10a37f" },
-  { name: "heimdall", displayName: "Heimdall", model: "Gemini 3.1 Pro", color: "#4285f4" },
-];
 
 export default function DashboardPage() {
   const [agents, setAgents] = useState<AgentState[]>(defaultAgents);
@@ -54,12 +49,12 @@ export default function DashboardPage() {
     fetch("/api/status")
       .then((r) => r.json())
       .then((data) => { if (data.agents) setAgents(data.agents); })
-      .catch(() => {});
+      .catch((err) => console.warn("[Dashboard] Failed to fetch status:", err.message));
 
     fetch("/api/chronicle")
       .then((r) => r.json())
       .then((data) => { if (data.tasks) setTasks(data.tasks); })
-      .catch(() => {});
+      .catch((err) => console.warn("[Dashboard] Failed to fetch chronicle:", err.message));
   }, []);
 
   useEffect(() => {
@@ -165,17 +160,20 @@ export default function DashboardPage() {
             <section>
               <h2 className="text-[13px] font-mono font-medium text-zinc-500 uppercase tracking-[0.15em] mb-4">Terminals</h2>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                {AGENT_TERMINALS.map((t) => (
-                  <TerminalPanel
-                    key={t.name}
-                    agent={t.name}
-                    displayName={t.displayName}
-                    model={t.model}
-                    logs={logs}
-                    isRunning={getAgentStatus(t.name)}
-                    accentColor={t.color}
-                  />
-                ))}
+                {AGENT_NAMES.map((name) => {
+                  const cfg = AGENT_CONFIG[name];
+                  return (
+                    <TerminalPanel
+                      key={name}
+                      agent={name}
+                      displayName={cfg.displayName}
+                      model={cfg.model}
+                      logs={logs}
+                      isRunning={getAgentStatus(name)}
+                      accentColor={cfg.color}
+                    />
+                  );
+                })}
               </div>
             </section>
           </div>
@@ -183,7 +181,7 @@ export default function DashboardPage() {
       </main>
 
       <footer className="border-t border-zinc-800/40 px-6 py-4 text-center mt-10">
-        <span className="text-[13px] text-zinc-700 font-mono tracking-wide">yggdrasil v0.1.0</span>
+        <span className="text-[13px] text-zinc-700 font-mono tracking-wide">yggdrasil v0.2.0</span>
       </footer>
 
       {selectedDoc && (

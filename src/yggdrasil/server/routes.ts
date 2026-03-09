@@ -14,10 +14,18 @@ export function createRouter(asgardRoot: string): Router {
         path.join(artifactsDir, "INDEX.md"),
         "utf-8"
       );
-    } catch {
+    } catch (err: unknown) {
+      if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
+        console.error("[Routes] Failed to read INDEX.md", (err as Error).message);
+      }
       return "";
     }
   }
+
+  // GET /api/health
+  router.get("/api/health", (_req: Request, res: Response) => {
+    res.json({ status: "ok", uptime: process.uptime(), timestamp: Date.now() });
+  });
 
   // GET /api/status
   router.get("/api/status", async (_req: Request, res: Response) => {
@@ -32,7 +40,8 @@ export function createRouter(asgardRoot: string): Router {
         ).length,
         completedTasks: tasks.filter((t) => t.status === "done").length,
       });
-    } catch {
+    } catch (err: unknown) {
+      console.error("[Routes] /api/status error", (err as Error).message);
       res.status(500).json({ error: "Failed to get status" });
     }
   });
@@ -43,7 +52,8 @@ export function createRouter(asgardRoot: string): Router {
       const content = await readIndexFile();
       const tasks = parseIndex(content);
       res.json({ tasks });
-    } catch {
+    } catch (err: unknown) {
+      console.error("[Routes] /api/chronicle error", (err as Error).message);
       res.status(500).json({ error: "Failed to get chronicle" });
     }
   });
@@ -67,7 +77,6 @@ export function createRouter(asgardRoot: string): Router {
       const fileName = `${type.toUpperCase()}-${id}.md`;
       const filePath = path.resolve(artifactsDir, "handoff", fileName);
 
-      // Security: ensure resolved path is within artifacts/
       if (!filePath.startsWith(artifactsDir)) {
         res.status(403).json({ error: "Access denied" });
         return;
@@ -80,7 +89,8 @@ export function createRouter(asgardRoot: string): Router {
           return;
         }
         res.json({ type, id, title: doc.title, content: doc.content });
-      } catch {
+      } catch (err: unknown) {
+        console.error(`[Routes] Document not found: ${fileName}`, (err as Error).message);
         res.status(404).json({ error: "Document not found" });
       }
     }

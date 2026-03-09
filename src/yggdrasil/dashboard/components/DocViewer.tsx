@@ -16,6 +16,14 @@ export default function DocViewer({ type, id, onClose }: DocViewerProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  useEffect(() => {
     setLoading(true);
     setError(null);
     fetch(`/api/document/${type}/${id}`)

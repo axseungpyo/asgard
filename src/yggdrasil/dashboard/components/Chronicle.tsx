@@ -1,24 +1,17 @@
 "use client";
 
-import type { Task, TaskStatus } from "../lib/types";
+import type { Task } from "../lib/types";
+import { TASK_STATUS_CONFIG, AGENT_CONFIG } from "../lib/constants";
 
 interface ChronicleProps {
   tasks: Task[];
   onDocClick: (type: "tp" | "rp", id: string) => void;
 }
 
-const statusConfig: Record<TaskStatus, { label: string; color: string }> = {
-  draft: { label: "Draft", color: "#71717a" },
-  "in-progress": { label: "In Progress", color: "#a78bfa" },
-  "review-needed": { label: "Review", color: "#f0abfc" },
-  done: { label: "Done", color: "#a3e635" },
-  blocked: { label: "Blocked", color: "#ff6b6b" },
-};
-
 const agentConfig: Record<string, { color: string; label: string }> = {
-  codex: { color: "#10a37f", label: "Brokkr" },
-  gemini: { color: "#4285f4", label: "Heimdall" },
-  odin: { color: "#d97757", label: "Odin" },
+  codex: { color: AGENT_CONFIG.brokkr.color, label: AGENT_CONFIG.brokkr.displayName },
+  gemini: { color: AGENT_CONFIG.heimdall.color, label: AGENT_CONFIG.heimdall.displayName },
+  odin: { color: AGENT_CONFIG.odin.color, label: AGENT_CONFIG.odin.displayName },
 };
 
 export default function Chronicle({ tasks, onDocClick }: ChronicleProps) {
@@ -42,7 +35,7 @@ export default function Chronicle({ tasks, onDocClick }: ChronicleProps) {
           <div className="space-y-px">
             {tasks.map((task) => {
               const idNum = task.id.replace(/\D/g, "");
-              const sc = statusConfig[task.status];
+              const sc = TASK_STATUS_CONFIG[task.status];
               const ac = agentConfig[task.agent.toLowerCase()] ?? { color: "#a1a1aa", label: task.agent };
 
               return (

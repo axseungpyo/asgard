@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import type { LogEntry, AgentName } from "../lib/types";
+import { AGENT_CONFIG, AGENT_NAMES } from "../lib/constants";
 
 interface LiveLogProps {
   logs: LogEntry[];
@@ -11,15 +12,15 @@ type TabFilter = "all" | AgentName;
 
 const tabs: { key: TabFilter; label: string; color: string }[] = [
   { key: "all", label: "All", color: "#a1a1aa" },
-  { key: "odin", label: "Odin", color: "#d97757" },
-  { key: "brokkr", label: "Brokkr", color: "#10a37f" },
-  { key: "heimdall", label: "Heimdall", color: "#4285f4" },
+  ...AGENT_NAMES.map((name) => ({
+    key: name as TabFilter,
+    label: AGENT_CONFIG[name].displayName,
+    color: AGENT_CONFIG[name].color,
+  })),
 ];
 
 const agentTagColors: Record<string, string> = {
-  odin: "#d97757",
-  brokkr: "#10a37f",
-  heimdall: "#4285f4",
+  ...Object.fromEntries(AGENT_NAMES.map((n) => [n, AGENT_CONFIG[n].color])),
   system: "#52525b",
 };
 

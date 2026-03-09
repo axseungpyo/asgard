@@ -1,17 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import type { AgentName, AgentState, AgentStatus, Task } from "../dashboard/lib/types";
-
-interface AgentConfig {
-  displayName: string;
-  color: string;
-}
-
-const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
-  odin: { displayName: "Odin", color: "#d97757" },
-  brokkr: { displayName: "Brokkr", color: "#10a37f" },
-  heimdall: { displayName: "Heimdall", color: "#4285f4" },
-};
+import { AGENT_CONFIG, AGENT_NAMES } from "../dashboard/lib/constants";
 
 async function readPidFile(
   filePath: string
@@ -23,7 +13,11 @@ async function readPidFile(
 
     const stat = await fs.stat(filePath);
     return { pid, startedAt: stat.mtimeMs };
-  } catch {
+  } catch (err: unknown) {
+    // ENOENT is expected (no PID file = agent not running)
+    if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
+      console.error(`[Agents] Failed to read PID file: ${filePath}`, (err as Error).message);
+    }
     return null;
   }
 }
@@ -32,7 +26,13 @@ function isProcessAlive(pid: number): boolean {
   try {
     process.kill(pid, 0);
     return true;
-  } catch {
+  } catch (err: unknown) {
+    const code = (err as NodeJS.ErrnoException).code;
+    if (code === "EPERM") {
+      // Process exists but we lack permission — treat as alive
+      return true;
+    }
+    // ESRCH = no such process — expected
     return false;
   }
 }
@@ -50,8 +50,8 @@ export async function getAgentStates(
 
   const states: AgentState[] = [];
 
-  for (const name of Object.keys(AGENT_CONFIGS) as AgentName[]) {
-    const config = AGENT_CONFIGS[name];
+  for (const name of AGENT_NAMES) {
+    const config = AGENT_CONFIG[name];
     let status: AgentStatus = "idle";
     let currentTP: string | null = null;
     let startedAt: number | null = null;
@@ -97,7 +97,7 @@ export async function getAgentStates(
 
     states.push({
       name,
-      displayName: config.displayName,
+      displayName: config.displayName as string,
       status,
       currentTP,
       mode: null,

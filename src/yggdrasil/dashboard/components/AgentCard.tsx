@@ -1,30 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { AgentState, AgentStatus } from "../lib/types";
+import type { AgentState } from "../lib/types";
+import { AGENT_CONFIG, STATUS_CONFIG } from "../lib/constants";
 
 interface AgentCardProps {
   agent: AgentState;
 }
-
-const AGENT_META: Record<string, { model: string; role: string }> = {
-  odin: { model: "Claude Opus 4.6", role: "Brain" },
-  brokkr: { model: "GPT-5.4 (Codex CLI)", role: "Hands-Code" },
-  heimdall: { model: "Gemini 3.1 Pro (Gemini CLI)", role: "Hands-Vision" },
-};
-
-const agentColors: Record<string, string> = {
-  odin: "#d97757",
-  brokkr: "#10a37f",
-  heimdall: "#4285f4",
-};
-
-const statusConfig: Record<AgentStatus, { label: string; color: string }> = {
-  idle: { label: "Idle", color: "#71717a" },
-  running: { label: "Running", color: "#a78bfa" },
-  blocked: { label: "Blocked", color: "#ff6b6b" },
-  done: { label: "Done", color: "#a3e635" },
-};
 
 function formatElapsed(startedAt: number): string {
   const seconds = Math.floor((Date.now() - startedAt) / 1000);
@@ -35,9 +17,9 @@ function formatElapsed(startedAt: number): string {
 
 export default function AgentCard({ agent }: AgentCardProps) {
   const [elapsed, setElapsed] = useState("");
-  const meta = AGENT_META[agent.name] ?? { model: "Unknown", role: "Agent" };
-  const color = agentColors[agent.name] ?? "#a1a1aa";
-  const status = statusConfig[agent.status];
+  const config = AGENT_CONFIG[agent.name];
+  const color = config?.color ?? "#a1a1aa";
+  const status = STATUS_CONFIG[agent.status];
 
   useEffect(() => {
     if (agent.status !== "running" || !agent.startedAt) {
@@ -70,7 +52,7 @@ export default function AgentCard({ agent }: AgentCardProps) {
       </div>
 
       <div className="text-[12px] text-zinc-600 mb-3 font-mono">
-        {meta.role} · {meta.model}
+        {config?.role ?? "Agent"} · {config?.model ?? "Unknown"}
       </div>
 
       <div className="space-y-1.5">

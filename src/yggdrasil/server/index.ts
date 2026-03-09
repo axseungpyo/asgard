@@ -12,27 +12,23 @@ import fs from "fs/promises";
 const PORT = parseInt(process.env.PORT || "7777", 10);
 const dev = process.env.NODE_ENV !== "production";
 const ASGARD_ROOT = path.resolve(process.cwd(), "../..");
+const WS_HEARTBEAT_INTERVAL = 30_000;
 
 async function main() {
-  // Next.js app
   const nextApp = next({ dev, dir: "./dashboard" });
   const handle = nextApp.getRequestHandler();
   await nextApp.prepare();
 
-  // Express
   const app = express();
   app.use(express.json());
   app.use(createRouter(ASGARD_ROOT));
 
-  // Next.js fallback handler
   app.all("/{*path}", (req, res) => {
     return handle(req, res);
   });
 
-  // HTTP server
   const server = http.createServer(app);
 
-  // WebSocket servers
   const wssLogs = new WebSocketServer({ noServer: true });
   const wssStatus = new WebSocketServer({ noServer: true });
 
@@ -52,10 +48,34 @@ async function main() {
     }
   });
 
-  // File watcher
+  // WebSocket heartbeat — detect zombie connections
+  function setupHeartbeat(wss: WebSocketServer) {
+    const aliveMap = new WeakMap<WebSocket, boolean>();
+
+    wss.on("connection", (ws) => {
+      aliveMap.set(ws, true);
+      ws.on("pong", () => aliveMap.set(ws, true));
+    });
+
+    const interval = setInterval(() => {
+      wss.clients.forEach((ws) => {
+        if (aliveMap.get(ws) === false) {
+          ws.terminate();
+          return;
+        }
+        aliveMap.set(ws, false);
+        ws.ping();
+      });
+    }, WS_HEARTBEAT_INTERVAL);
+
+    wss.on("close", () => clearInterval(interval));
+  }
+
+  setupHeartbeat(wssLogs);
+  setupHeartbeat(wssStatus);
+
   const watcher = new AsgardWatcher(ASGARD_ROOT);
 
-  // Helper to broadcast to all clients of a WebSocketServer
   function broadcast(wss: WebSocketServer, data: unknown) {
     const message = JSON.stringify(data);
     wss.clients.forEach((client) => {
@@ -65,7 +85,6 @@ async function main() {
     });
   }
 
-  // Watcher events → WebSocket broadcasts
   watcher.on("log-change", ({ lines }) => {
     for (const entry of lines) {
       broadcast(wssLogs, { type: "log", data: entry });
@@ -80,12 +99,17 @@ async function main() {
     broadcast(wssStatus, { type: "status", data: agents });
   });
 
-  // Send initial data on WebSocket connection
   wssLogs.on("connection", async (ws) => {
     ws.send(JSON.stringify({ type: "connected", data: { message: "Logs stream connected" } }));
-    const recentLogs = await watcher.getRecentLogs(100);
-    for (const entry of recentLogs) {
-      ws.send(JSON.stringify({ type: "log", data: entry }));
+    try {
+      const recentLogs = await watcher.getRecentLogs(100);
+      for (const entry of recentLogs) {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: "log", data: entry }));
+        }
+      }
+    } catch (err) {
+      console.error("[Yggdrasil] Failed to send initial logs", (err as Error).message);
     }
   });
 
@@ -96,19 +120,22 @@ async function main() {
       let content = "";
       try {
         content = await fs.readFile(indexPath, "utf-8");
-      } catch {
-        // INDEX.md may not exist yet
+      } catch (err: unknown) {
+        if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
+          console.error("[Yggdrasil] Failed to read INDEX.md", (err as Error).message);
+        }
       }
       const tasks = parseIndex(content);
       const agents = await getAgentStates(ASGARD_ROOT, tasks);
-      ws.send(JSON.stringify({ type: "status", data: agents }));
-      ws.send(JSON.stringify({ type: "chronicle", data: tasks }));
-    } catch {
-      // graceful
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: "status", data: agents }));
+        ws.send(JSON.stringify({ type: "chronicle", data: tasks }));
+      }
+    } catch (err) {
+      console.error("[Yggdrasil] Failed to send initial status", (err as Error).message);
     }
   });
 
-  // Start
   await watcher.start();
 
   server.listen(PORT, () => {
@@ -118,7 +145,6 @@ async function main() {
     console.log(`[Yggdrasil] WebSocket endpoints: /ws/logs, /ws/status`);
   });
 
-  // Graceful shutdown
   const shutdown = async () => {
     console.log("\n[Yggdrasil] Shutting down...");
     await watcher.stop();

@@ -144,14 +144,14 @@ Asgard는 Claude Code(Odin)를 Brain Agent로, Codex CLI(Brokkr)와 Gemini CLI(H
 
 ### Phase 2: 안정화 (Stability)
 
-| Priority | Task | Description | Effort |
-|----------|------|-------------|--------|
-| P0 | 테스트 프레임워크 | Vitest 도입, parser/agents/watcher 단위 테스트 | 2일 |
-| P0 | 에러 핸들링 개선 | 빈 catch 제거, 구조화된 에러 로깅 도입 | 1일 |
-| P0 | 설정 중앙화 | 에이전트 색상/이름/모델을 단일 config 파일로 추출 | 0.5일 |
-| P1 | 동시 실행 Lock | flock 기반 에이전트 동시 실행 방지 | 1일 |
-| P1 | 로그 로테이션 | 로그 파일 크기 제한 + 로테이션 | 0.5일 |
-| P1 | WS 인증 | 토큰 기반 WebSocket 인증 (로컬 토큰 파일) | 1일 |
+| Priority | Task | Description | Effort | Status |
+|----------|------|-------------|--------|--------|
+| P0 | 테스트 프레임워크 | Vitest 도입, parser/agents/constants 단위 테스트 20개 | 2일 | **v0.2.1 완료** |
+| P0 | 에러 핸들링 개선 | 빈 catch 14건 제거, ENOENT/EPERM 구분, 구조화된 로깅 | 1일 | **v0.2.1 완료** |
+| P0 | 설정 중앙화 | constants.ts 생성, 8개 파일 중복 제거 | 0.5일 | **v0.2.1 완료** |
+| P1 | 동시 실행 Lock | flock 기반 에이전트 동시 실행 방지 | 1일 | 미진행 |
+| P1 | 로그 로테이션 | 로그 파일 크기 제한 + 로테이션 | 0.5일 | 미진행 |
+| P1 | WS 인증 | 토큰 기반 WebSocket 인증 (로컬 토큰 파일) | 1일 | → Phase 5 이동 |
 
 ### Phase 3: 대시보드 고도화 (Dashboard v2)
 
@@ -212,11 +212,11 @@ Asgard는 Claude Code(Odin)를 Brain Agent로, Codex CLI(Brokkr)와 Gemini CLI(H
 
 아래 항목은 1일 이내에 완료 가능하며, 프로젝트 품질을 크게 개선한다:
 
-1. **설정 중앙화** — `dashboard/lib/constants.ts` 생성, 에이전트 색상/이름/모델 단일 정의
-2. **빈 catch 개선** — `catch {}` → `catch (err) { console.error(...) }` 최소 변환
-3. **DocViewer ESC 키** — `useEffect` + `keydown` 이벤트 리스너 추가
-4. **헬스체크 API** — `router.get("/api/health", ...)` 한 줄 추가
-5. **WS_BASE 수정** — `window.location.protocol === "https:" ? "wss:" : "ws:"` 동적 판별
+1. ~~**설정 중앙화** — `dashboard/lib/constants.ts` 생성~~ **v0.2.1 완료**
+2. ~~**빈 catch 개선** — 구조화된 에러 로깅으로 교체~~ **v0.2.1 완료**
+3. ~~**DocViewer ESC 키** — `useEffect` + `keydown` 이벤트 리스너~~ **v0.2.1 완료**
+4. ~~**헬스체크 API** — `GET /api/health`~~ **v0.2.1 완료**
+5. ~~**WS_BASE 수정** — `getWsBase()` 함수로 프로토콜 동적 판별~~ **v0.2.1 완료**
 
 ---
 

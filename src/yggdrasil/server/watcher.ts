@@ -8,6 +8,15 @@ import type { AgentName, LogEntry } from "../dashboard/lib/types";
 
 const TAIL_INITIAL_LINES = 500;
 
+function log(level: "info" | "warn" | "error", msg: string, err?: unknown): void {
+  const prefix = `[Watcher]`;
+  if (level === "error") {
+    console.error(`${prefix} ${msg}`, err instanceof Error ? err.message : err ?? "");
+  } else if (level === "warn") {
+    console.warn(`${prefix} ${msg}`);
+  }
+}
+
 export class AsgardWatcher extends EventEmitter {
   private asgardRoot: string;
   private fileOffsets: Map<string, number> = new Map();
@@ -29,7 +38,6 @@ export class AsgardWatcher extends EventEmitter {
       path.join(artifactsDir, "logs", ".heimdall.pid"),
     ];
 
-    // Initial load of existing log files
     await this.initialLoadLogs(path.join(artifactsDir, "logs"));
 
     this.watcher = chokidar.watch(watchPaths, {
@@ -43,6 +51,10 @@ export class AsgardWatcher extends EventEmitter {
 
     this.watcher.on("add", (filePath: string) => {
       this.handleFileChange(filePath);
+    });
+
+    this.watcher.on("error", (err) => {
+      log("error", "File watcher error", err);
     });
   }
 
@@ -61,8 +73,10 @@ export class AsgardWatcher extends EventEmitter {
         const filePath = path.join(logsDir, file);
         await this.tailFile(filePath, TAIL_INITIAL_LINES);
       }
-    } catch {
-      // logs directory may not exist yet
+    } catch (err: unknown) {
+      if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
+        log("error", "Failed to load initial logs", err);
+      }
     }
   }
 
@@ -77,7 +91,10 @@ export class AsgardWatcher extends EventEmitter {
 
       const lines = content.split("\n").filter(Boolean);
       return lines.slice(-maxLines);
-    } catch {
+    } catch (err: unknown) {
+      if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
+        log("error", `Failed to tail file: ${filePath}`, err);
+      }
       return [];
     }
   }
@@ -92,7 +109,6 @@ export class AsgardWatcher extends EventEmitter {
     } else if (basename.endsWith(".pid")) {
       await this.handleAgentChange();
     }
-    // handoff/*.md changes don't need special handling
   }
 
   private async handleLogChange(filePath: string): Promise<void> {
@@ -101,7 +117,6 @@ export class AsgardWatcher extends EventEmitter {
       const lastOffset = this.fileOffsets.get(filePath) ?? 0;
 
       if (stat.size <= lastOffset) {
-        // File was truncated, reset offset
         this.fileOffsets.set(filePath, 0);
         return;
       }
@@ -126,8 +141,10 @@ export class AsgardWatcher extends EventEmitter {
         }));
         this.emit("log-change", { agent, lines: logEntries });
       }
-    } catch {
-      // File may have been deleted
+    } catch (err: unknown) {
+      if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
+        log("error", `Failed to read log changes: ${filePath}`, err);
+      }
     }
   }
 
@@ -137,32 +154,29 @@ export class AsgardWatcher extends EventEmitter {
       const tasks = parseIndex(content);
       this.emit("index-change", { tasks });
 
-      // Also emit agent state change
       const agents = await getAgentStates(this.asgardRoot, tasks);
       this.emit("agent-change", { agents });
-    } catch {
-      // File may be temporarily unavailable
+    } catch (err: unknown) {
+      log("error", "Failed to parse INDEX.md", err);
     }
   }
 
   private async handleAgentChange(): Promise<void> {
     try {
-      const indexPath = path.join(
-        this.asgardRoot,
-        "artifacts",
-        "INDEX.md"
-      );
+      const indexPath = path.join(this.asgardRoot, "artifacts", "INDEX.md");
       let content = "";
       try {
         content = await fs.readFile(indexPath, "utf-8");
-      } catch {
-        // INDEX.md may not exist
+      } catch (err: unknown) {
+        if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
+          log("warn", "Could not read INDEX.md for agent state update");
+        }
       }
       const tasks = parseIndex(content);
       const agents = await getAgentStates(this.asgardRoot, tasks);
       this.emit("agent-change", { agents });
-    } catch {
-      // graceful
+    } catch (err: unknown) {
+      log("error", "Failed to update agent states", err);
     }
   }
 
@@ -181,7 +195,6 @@ export class AsgardWatcher extends EventEmitter {
     return "info";
   }
 
-  /** Get initial log entries for new WebSocket connections */
   async getRecentLogs(maxLines: number = 100): Promise<LogEntry[]> {
     const logsDir = path.join(this.asgardRoot, "artifacts", "logs");
     const entries: LogEntry[] = [];
@@ -202,8 +215,10 @@ export class AsgardWatcher extends EventEmitter {
           });
         }
       }
-    } catch {
-      // logs directory may not exist
+    } catch (err: unknown) {
+      if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
+        log("error", "Failed to read recent logs", err);
+      }
     }
 
     return entries;

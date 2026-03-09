@@ -3,6 +3,26 @@
 이 프로젝트의 주요 변경사항을 기록합니다.
 형식: [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)
 
+## [0.2.1] - 2026-03-09
+
+### Added
+- **Vitest 테스트 프레임워크** — 단위 테스트 20개 (parser, agents, constants)
+- `dashboard/lib/constants.ts` — 에이전트 설정 중앙화 (SSoT)
+- `GET /api/health` — 서버 헬스체크 엔드포인트
+- WebSocket heartbeat (30초 ping/pong) — 좀비 연결 자동 제거
+- DocViewer ESC 키보드 핸들러
+
+### Changed
+- 에러 핸들링 전면 개선: 빈 `catch {}` 14건 → 구조화된 에러 로깅 (ENOENT 구분)
+- `agents.ts`: EPERM 에러를 프로세스 alive로 올바르게 처리
+- `getWsBase()`: HTTPS 환경에서 wss:// 자동 판별
+- 8개 컴포넌트의 하드코딩된 색상/이름/모델 → `constants.ts` 참조로 교체
+- `package.json` version 0.2.0 → 0.2.1, `test`/`test:watch` 스크립트 추가
+
+### Fixed
+- WebSocket 초기 데이터 전송 시 `readyState` 미체크 → 체크 추가
+- `watcher.ts` chokidar error 이벤트 미핸들링 → 리스너 추가
+
 ## [0.2.0] - 2026-03-09
 
 ### Added
