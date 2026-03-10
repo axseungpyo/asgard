@@ -3,6 +3,22 @@
 이 프로젝트의 주요 변경사항을 기록합니다.
 형식: [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)
 
+## [0.3.5] - 2026-03-11
+
+### Added
+- **MCP Servers 패널** — Skills 탭 하단에 MCP 서버 관리 섹션 통합
+  - GitHub, Notion, Supabase, Slack, Custom MCP 5개 서버 지원
+  - 에이전트별 접근 제어 (Odin/Brokkr/Heimdall/Loki 개별 토글)
+  - 연결 상태 표시 (connected 배지, 에이전트 색상 dots)
+  - `McpPanel.tsx` 컴포넌트 신규 생성
+
+### Changed
+- **API Keys 토글 버그 수정** — `<button>` 중첩으로 인한 더블 토글 문제 해결
+  - 외부 `<button>` → `<div role="button">` + Toggle에 `stopPropagation` 추가
+- **API Keys 토글 우측 배치** — 토글 버튼을 행 우측으로 이동 (라벨 — configured — 토글)
+- **모델 버전 최신화** — GPT-5.4, Gemini 3.1 Pro, Kimi K2.5, GLM-5, DeepSeek V4, Grok 3 등
+- **MCP Servers를 Settings에서 분리** — API Keys 탭에서 MCP 항목 제거 → Skills 탭 통합
+
 ## [0.3.4] - 2026-03-11
 
 ### Changed

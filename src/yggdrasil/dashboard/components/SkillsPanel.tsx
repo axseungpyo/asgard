@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { authFetch } from "../lib/auth";
 import { AGENT_CONFIG } from "../lib/constants";
+import McpPanel from "./McpPanel";
 
 type Category = "all" | "planning" | "dispatch" | "intel" | "system";
 
@@ -441,6 +442,11 @@ export default function SkillsPanel() {
       <p className="text-[11px] text-slate-500 font-mono text-right">
         {filtered.length} skills · click row to expand
       </p>
+
+      {/* MCP Servers Section */}
+      <div className="mt-10 pt-8 border-t border-border/40">
+        <McpPanel />
+      </div>
 
       {/* Skill Document Side Panel */}
       {docSkill && (

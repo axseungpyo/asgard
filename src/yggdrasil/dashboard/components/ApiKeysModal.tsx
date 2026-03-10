@@ -13,17 +13,17 @@ const API_KEY_FIELDS: {
   hint: string;
 }[] = [
   // Major AI Providers
-  { id: "openai-api-key", label: "OpenAI", placeholder: "sk-proj-...", group: "AI Providers", hint: "GPT-4o, o1, o3, DALL-E" },
-  { id: "anthropic-api-key", label: "Anthropic", placeholder: "sk-ant-...", group: "AI Providers", hint: "Claude Opus, Sonnet, Haiku" },
-  { id: "google-api-key", label: "Google AI", placeholder: "AIza...", group: "AI Providers", hint: "Gemini Pro, Flash, Imagen · Loki 이미지 생성용" },
-  { id: "moonshot-api-key", label: "Moonshot (Kimi)", placeholder: "sk-...", group: "AI Providers", hint: "Kimi K2.5 — platform.moonshot.ai" },
-  { id: "zhipu-api-key", label: "Zhipu AI (GLM)", placeholder: "...", group: "AI Providers", hint: "GLM-5 — open.bigmodel.cn" },
-  { id: "deepseek-api-key", label: "DeepSeek", placeholder: "sk-...", group: "AI Providers", hint: "DeepSeek V4, Reasoner" },
-  { id: "groq-api-key", label: "Groq", placeholder: "gsk_...", group: "AI Providers", hint: "Llama, Mixtral (fast inference)" },
-  { id: "mistral-api-key", label: "Mistral", placeholder: "...", group: "AI Providers", hint: "Mistral Large, Codestral" },
-  { id: "xai-api-key", label: "xAI", placeholder: "xai-...", group: "AI Providers", hint: "Grok" },
+  { id: "openai-api-key", label: "OpenAI", placeholder: "sk-proj-...", group: "AI Providers", hint: "GPT-5.4, GPT-5.3 Codex, DALL-E 4" },
+  { id: "anthropic-api-key", label: "Anthropic", placeholder: "sk-ant-...", group: "AI Providers", hint: "Claude Opus 4.6, Sonnet 4.6, Haiku 4.5" },
+  { id: "google-api-key", label: "Google AI", placeholder: "AIza...", group: "AI Providers", hint: "Gemini 3.1 Pro, Flash, Imagen 4 · Loki 공용" },
+  { id: "moonshot-api-key", label: "Moonshot (Kimi)", placeholder: "sk-...", group: "AI Providers", hint: "Kimi K2.5 (1T params, Agent Swarm)" },
+  { id: "zhipu-api-key", label: "Zhipu AI (GLM)", placeholder: "...", group: "AI Providers", hint: "GLM-5 (744B MoE, Ascend 전용)" },
+  { id: "deepseek-api-key", label: "DeepSeek", placeholder: "sk-...", group: "AI Providers", hint: "DeepSeek V4 (멀티모달), Reasoner" },
+  { id: "groq-api-key", label: "Groq", placeholder: "gsk_...", group: "AI Providers", hint: "Llama 4, Compound AI (LPU 추론)" },
+  { id: "mistral-api-key", label: "Mistral", placeholder: "...", group: "AI Providers", hint: "Mistral Large 3 (675B MoE), Medium 3" },
+  { id: "xai-api-key", label: "xAI", placeholder: "xai-...", group: "AI Providers", hint: "Grok 3" },
   // Gateways
-  { id: "openrouter-api-key", label: "OpenRouter", placeholder: "sk-or-...", group: "Gateways", hint: "200+ 모델 통합 게이트웨이" },
+  { id: "openrouter-api-key", label: "OpenRouter", placeholder: "sk-or-...", group: "Gateways", hint: "200+ 모델 통합 라우팅" },
   { id: "together-api-key", label: "Together AI", placeholder: "...", group: "Gateways", hint: "오픈소스 모델 호스팅" },
   // Custom
   { id: "custom-api-key", label: "Custom API", placeholder: "API key...", group: "Custom", hint: "기타 서비스용 키" },
@@ -516,24 +516,28 @@ export default function ApiKeysModal({ onClose }: ApiKeysModalProps) {
                         const hasKey = !!keys[field.id];
                         return (
                           <div key={field.id}>
-                            <button
-                              type="button"
+                            <div
+                              role="button"
+                              tabIndex={0}
                               onClick={() => setEnabledProviders((prev) => ({ ...prev, [field.id]: !prev[field.id] }))}
-                              className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-bg-secondary/50 transition"
+                              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setEnabledProviders((prev) => ({ ...prev, [field.id]: !prev[field.id] })); } }}
+                              className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-bg-secondary/50 transition cursor-pointer select-none"
                             >
-                              <div className="flex items-center gap-3 min-w-0">
-                                <Toggle checked={enabled} onChange={(v) => setEnabledProviders((prev) => ({ ...prev, [field.id]: v }))} />
-                                <div className="min-w-0">
-                                  <div className="text-[13px] font-mono text-slate-200">{field.label}</div>
-                                  <div className="text-[10px] text-slate-500 truncate">{field.hint}</div>
+                              <div className="min-w-0">
+                                <div className="text-[13px] font-mono text-slate-200">{field.label}</div>
+                                <div className="text-[10px] text-slate-500 truncate">{field.hint}</div>
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0">
+                                {hasKey && (
+                                  <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                                    configured
+                                  </span>
+                                )}
+                                <div onClick={(e) => e.stopPropagation()}>
+                                  <Toggle checked={enabled} onChange={(v) => setEnabledProviders((prev) => ({ ...prev, [field.id]: v }))} />
                                 </div>
                               </div>
-                              {hasKey && (
-                                <span className="shrink-0 text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                                  configured
-                                </span>
-                              )}
-                            </button>
+                            </div>
                             {enabled && (
                               <div className="px-4 pb-3">
                                 <input
