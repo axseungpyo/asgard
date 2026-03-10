@@ -3,6 +3,21 @@
 이 프로젝트의 주요 변경사항을 기록합니다.
 형식: [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)
 
+## [0.3.4] - 2026-03-11
+
+### Changed
+- **Settings 모달 전면 개편** — 단일 API Keys 모달 → 4탭 종합 설정 패널
+  - **Appearance** 탭: Dark/Light 테마 선택 (라이브 프리뷰), 터미널 폰트 크기 (S/M/L)
+  - **Notifications** 탭: 마스터 토글, 이벤트별 (Complete/Blocked/Error), 에이전트별 알림 제어
+  - **Connection** 탭: Server URL, Access Token 관리(Clear), Auto-refresh 주기, Log Buffer 크기
+  - **API Keys** 탭: 토글 방식 프로바이더 선택 + 확장 입력
+- **API Keys 프로바이더 확장** — 12개 AI 프로바이더 지원
+  - OpenAI, Anthropic, Google AI (Loki 통합), Moonshot (Kimi K2.5), Zhipu AI (GLM-5),
+    DeepSeek, Groq, Mistral, xAI, OpenRouter, Together AI, Custom
+  - 그룹별 분류 (AI Providers / Gateways / Custom), configured 배지
+  - Loki 전용 키 제거 → Google AI에 통합 (Gemini Imagen 공용)
+- **QuickActions 닫기 버튼 확대** — 14px → 18px, 28×28 클릭 영역, hover 배경색
+
 ## [0.3.3] - 2026-03-10
 
 ### Added
