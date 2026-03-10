@@ -1,7 +1,9 @@
-# Asgard Control Panel — Master Plan
+# Plan A: Control Panel — 대시보드 기능 확장
 
 > Yggdrasil 대시보드를 모니터링 도구에서 **에이전트 오케스트레이션 관제 시스템**으로 확장한다.
 > 사용자는 Odin을 통해 시스템을 제어하며, Odin이 Brokkr/Heimdall/Loki를 관리·통제한다.
+>
+> **Track**: Plan A (대시보드 기능) — [Plan B (AI 두뇌 연동)](./PLAN-B-AI-BRAIN.md)와 병렬 진행
 
 **작성일**: 2026-03-11
 **기반 버전**: v0.3.5
