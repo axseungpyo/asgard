@@ -5,8 +5,10 @@
   "description": "Yggdrasil — Asgard Agent Monitoring Dashboard",
   "scripts": {
     "dev": "tsx server/index.ts",
-    "build": "next build",
+    "build": "next build ./dashboard",
     "start": "NODE_ENV=production tsx server/index.ts",
+    "typecheck": "tsc --noEmit",
+    "restart": "pkill -f 'tsx server/index.ts' 2>/dev/null; sleep 1; tsx server/index.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
