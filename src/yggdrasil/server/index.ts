@@ -36,8 +36,8 @@ async function main() {
 
   const server = http.createServer(app);
 
-  const watcher = new AsgardWatcher(container);
-  setupWebSockets(server, watcher, container, odinChannel);
+  const watcher = new AsgardWatcher(container, container.eventBus);
+  setupWebSockets(server, watcher, container.eventBus, container, odinChannel);
 
   await odinChannel.loadHistory();
 

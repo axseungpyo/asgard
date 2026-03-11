@@ -1,4 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
+import { COMMAND_PROCESSED_EVENT } from "../core/events/CommandProcessed";
+import type { DomainEvent } from "../core/events/DomainEvent";
 import { InMemoryApprovalStore } from "../adapters/stores/InMemoryApprovalStore";
 import { RegexFallbackGateway } from "../adapters/gateways/RegexFallbackGateway";
 import { ProcessCommandUseCase } from "../core/use-cases/odin/ProcessCommandUseCase";
@@ -6,6 +8,7 @@ import type { AgentEntity, AgentHealth, AgentName } from "../core/entities/Agent
 import type { SkillDefinition, SkillMatch } from "../core/entities/Skill";
 import type { CreateTaskInput, TaskEntity, TaskStatus } from "../core/entities/Task";
 import type { IAgentRepository } from "../core/ports/IAgentRepository";
+import type { IEventBus } from "../core/ports/IEventBus";
 import type { ILLMGateway, LLMMessage, LLMResponse } from "../core/ports/ILLMGateway";
 import type { IMessageRepository } from "../core/ports/IMessageRepository";
 import type { ISkillRegistry } from "../core/ports/ISkillRegistry";
@@ -72,6 +75,22 @@ class StubGateway implements ILLMGateway {
   }
 }
 
+class StubEventBus implements IEventBus {
+  published: DomainEvent[] = [];
+
+  publish(event: DomainEvent): void {
+    this.published.push(event);
+  }
+
+  subscribe(): () => void {
+    return () => {};
+  }
+
+  subscribeAll(): () => void {
+    return () => {};
+  }
+}
+
 function createSkillRegistry(): ISkillRegistry {
   const skills: SkillDefinition[] = [
     {
@@ -114,6 +133,7 @@ describe("ProcessCommandUseCase", () => {
   it("falls back to regex matching when the Claude gateway is unavailable", async () => {
     const messageRepository = new MemoryMessageRepository();
     const skillRegistry = createSkillRegistry();
+    const eventBus = new StubEventBus();
     const useCase = new ProcessCommandUseCase(
       messageRepository,
       skillRegistry,
@@ -123,18 +143,27 @@ describe("ProcessCommandUseCase", () => {
       new StubTaskRepository(),
       new StubAgentRepository(),
       "/tmp/asgard",
+      eventBus,
     );
 
     const result = await useCase.execute("상태 알려줘");
 
     expect(skillRegistry.execute).toHaveBeenCalledWith("status", "");
     expect(result.messages.at(-1)?.content).toContain("프로젝트 현황");
+    expect(eventBus.published.at(-1)).toMatchObject({
+      type: COMMAND_PROCESSED_EVENT,
+      payload: {
+        command: "상태 알려줘",
+        skill: "status",
+      },
+    });
   });
 
   it("executes tool calls from the Claude gateway", async () => {
     const messageRepository = new MemoryMessageRepository();
     const skillRegistry = createSkillRegistry();
     const regexGateway = new StubGateway(true, async () => ({ content: "regex", stopReason: "end_turn" }));
+    const eventBus = new StubEventBus();
     const useCase = new ProcessCommandUseCase(
       messageRepository,
       skillRegistry,
@@ -148,11 +177,13 @@ describe("ProcessCommandUseCase", () => {
       new StubTaskRepository(),
       new StubAgentRepository(),
       "/tmp/asgard",
+      eventBus,
     );
 
     const result = await useCase.execute("상태 알려줘");
 
     expect(skillRegistry.execute).toHaveBeenCalledWith("status", "");
     expect(result.messages.at(-1)?.content).toContain("프로젝트 현황");
+    expect(eventBus.published.at(-1)?.type).toBe(COMMAND_PROCESSED_EVENT);
   });
 });

@@ -2,6 +2,9 @@ import { EventEmitter } from "events";
 import fs from "fs/promises";
 import path from "path";
 import chokidar from "chokidar";
+import { FILE_CHANGED_EVENT } from "../core/events/FileChanged";
+import { LOG_ENTRY_EVENT } from "../core/events/LogEntry";
+import type { IEventBus } from "../core/ports/IEventBus";
 import { parseIndex } from "../domain/tasks/task-parser";
 import { getAgentStates } from "../domain/agents/agent-state";
 import type { Container } from "../di/container";
@@ -16,7 +19,10 @@ export class AsgardWatcher extends EventEmitter {
   private fileOffsets: Map<string, number> = new Map();
   private watcher: ReturnType<typeof chokidar.watch> | null = null;
 
-  constructor(private readonly container: Container) {
+  constructor(
+    private readonly container: Container,
+    private readonly eventBus: IEventBus,
+  ) {
     super();
     this.asgardRoot = container.asgardRoot;
   }
@@ -102,9 +108,13 @@ export class AsgardWatcher extends EventEmitter {
     const basename = path.basename(filePath);
 
     if (filePath.endsWith(".log")) {
+      this.publishFileChanged(filePath, "log");
       await this.handleLogChange(filePath);
     } else if (basename === "INDEX.md") {
+      this.publishFileChanged(filePath, "index");
       await this.handleIndexChange(filePath);
+    } else if (filePath.endsWith(".md")) {
+      this.publishFileChanged(filePath, "handoff");
     } else if (basename.endsWith(".pid")) {
       await this.handleAgentChange();
     }
@@ -138,6 +148,17 @@ export class AsgardWatcher extends EventEmitter {
           message: line,
           level: this.detectLevel(line),
         }));
+        for (const entry of logEntries) {
+          this.eventBus.publish({
+            type: LOG_ENTRY_EVENT,
+            timestamp: entry.timestamp,
+            payload: {
+              agent: entry.agent,
+              message: entry.message,
+              level: entry.level,
+            },
+          });
+        }
         this.emit("log-change", { agent, lines: logEntries });
       }
     } catch (err: unknown) {
@@ -145,6 +166,20 @@ export class AsgardWatcher extends EventEmitter {
         log.error({ err, filePath }, "Failed to read log changes");
       }
     }
+  }
+
+  private publishFileChanged(
+    filePath: string,
+    type: "log" | "index" | "handoff",
+  ): void {
+    this.eventBus.publish({
+      type: FILE_CHANGED_EVENT,
+      timestamp: Date.now(),
+      payload: {
+        path: filePath,
+        type,
+      },
+    });
   }
 
   private async handleIndexChange(filePath: string): Promise<void> {

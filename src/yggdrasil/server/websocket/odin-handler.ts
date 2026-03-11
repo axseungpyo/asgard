@@ -1,5 +1,8 @@
 import http from "http";
 import { WebSocket, WebSocketServer } from "ws";
+import { COMMAND_PROCESSED_EVENT } from "../core/events/CommandProcessed";
+import type { CommandProcessedPayload } from "../core/events/CommandProcessed";
+import type { IEventBus } from "../core/ports/IEventBus";
 import { createLogger } from "../infra/logger";
 import type { AsgardWatcher } from "../infra/watcher";
 import type { OdinChannel } from "../domain/odin/odin-channel";
@@ -12,6 +15,7 @@ export async function handleOdinConnection(
   request: http.IncomingMessage,
   _watcher: AsgardWatcher,
   odinChannel: OdinChannel,
+  eventBus: IEventBus,
   authorizeWs: AuthorizeWebSocket,
   broadcast: Broadcast,
   wssOdin: WebSocketServer
@@ -29,16 +33,23 @@ export async function handleOdinConnection(
     }
   }
 
+  const unsubscribe = eventBus.subscribe(COMMAND_PROCESSED_EVENT, (event) => {
+    const payload = event.payload as unknown as CommandProcessedPayload;
+    const result = payload.result;
+    for (const msg of result.messages) {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: "message", data: msg }));
+      }
+    }
+  });
+
   ws.on("message", async (raw) => {
     try {
       const parsed = JSON.parse(raw.toString());
 
       if (parsed.type === "command" && typeof parsed.content === "string") {
-        const result = await odinChannel.processCommand(parsed.content);
+        await odinChannel.processCommand(parsed.content);
         await odinChannel.saveHistory();
-        for (const msg of result.messages) {
-          broadcast(wssOdin, { type: "message", data: msg });
-        }
       } else if (parsed.type === "approve" && typeof parsed.approvalId === "string") {
         const result = await odinChannel.processApproval(parsed.approvalId, parsed.approved !== false);
         await odinChannel.saveHistory();
@@ -50,4 +61,6 @@ export async function handleOdinConnection(
       log.error({ err }, "Failed to process Odin WS message");
     }
   });
+
+  ws.on("close", unsubscribe);
 }

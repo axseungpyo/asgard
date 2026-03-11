@@ -1,4 +1,5 @@
 import http from "http";
+import type { IEventBus } from "../core/ports/IEventBus";
 import type { Container } from "../di/container";
 import type { AsgardWatcher } from "../infra/watcher";
 import type { OdinChannel } from "../domain/odin/odin-channel";
@@ -15,6 +16,7 @@ import {
 export function setupWebSockets(
   server: http.Server,
   watcher: AsgardWatcher,
+  eventBus: IEventBus,
   container: Container,
   odinChannel: OdinChannel,
 ): void {
@@ -24,26 +26,12 @@ export function setupWebSockets(
   setupHeartbeat(wssStatus);
   setupHeartbeat(wssOdin);
 
-  watcher.on("log-change", ({ lines }) => {
-    for (const entry of lines) {
-      broadcast(wssLogs, { type: "log", data: entry });
-    }
-  });
-
-  watcher.on("index-change", ({ tasks }) => {
-    broadcast(wssStatus, { type: "chronicle", data: tasks });
-  });
-
-  watcher.on("agent-change", ({ agents }) => {
-    broadcast(wssStatus, { type: "status", data: agents });
-  });
-
   wssLogs.on("connection", (ws, request) => {
-    void handleLogsConnection(ws, request, watcher, authorizeWebSocket, broadcast);
+    void handleLogsConnection(ws, request, watcher, eventBus, authorizeWebSocket, broadcast);
   });
 
   wssStatus.on("connection", (ws, request) => {
-    void handleStatusConnection(ws, request, watcher, container, authorizeWebSocket, broadcast);
+    void handleStatusConnection(ws, request, watcher, container, eventBus, authorizeWebSocket, broadcast);
   });
 
   wssOdin.on("connection", (ws, request) => {
@@ -52,6 +40,7 @@ export function setupWebSockets(
       request,
       watcher,
       odinChannel,
+      eventBus,
       authorizeWebSocket,
       broadcast,
       wssOdin

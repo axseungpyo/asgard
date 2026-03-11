@@ -1,7 +1,9 @@
 import type { AgentName } from "../../entities/Agent";
 import type { IAgentRepository } from "../../ports/IAgentRepository";
+import type { IEventBus } from "../../ports/IEventBus";
 import type { IAgentProcessRegistry } from "../../ports/IAgentProcessRegistry";
 import type { IProcessGateway } from "../../ports/IProcessGateway";
+import { AGENT_STOPPED_EVENT } from "../../events/AgentStopped";
 
 export interface StopAgentInput {
   agentName: AgentName;
@@ -17,6 +19,7 @@ export class StopAgentUseCase {
     private readonly agentRepository: IAgentRepository,
     private readonly processGateway: IProcessGateway,
     private readonly processRegistry: IAgentProcessRegistry,
+    private readonly eventBus?: IEventBus,
   ) {}
 
   async execute(input: StopAgentInput): Promise<StopAgentResult> {
@@ -30,6 +33,7 @@ export class StopAgentUseCase {
         managed.process.pid ? this.processGateway.kill(-managed.process.pid, "SIGTERM") : managed.process.kill("SIGTERM");
         this.processRegistry.delete(input.agentName);
         await this.agentRepository.deletePid(input.agentName);
+        this.publishStopped(input.agentName, 0);
         return { success: true, message: `${input.agentName} stopped.` };
       } catch (err) {
         void err;
@@ -53,9 +57,21 @@ export class StopAgentUseCase {
       }
       await this.agentRepository.deletePid(input.agentName);
       this.processRegistry.delete(input.agentName);
+      this.publishStopped(input.agentName, 0);
       return { success: true, message: `${input.agentName} stopped (PID ${pid}).` };
     } catch (err) {
       return { success: false, message: `Failed to stop ${input.agentName}: ${err instanceof Error ? err.message : "Unknown error"}` };
     }
+  }
+
+  private publishStopped(agent: AgentName, exitCode: number): void {
+    this.eventBus?.publish({
+      type: AGENT_STOPPED_EVENT,
+      timestamp: Date.now(),
+      payload: {
+        agent,
+        exitCode,
+      },
+    });
   }
 }

@@ -1,7 +1,9 @@
 import type { CommandResult } from "../../entities/Message";
 import type { IAgentRepository } from "../../ports/IAgentRepository";
 import type { IApprovalStore } from "../../ports/IApprovalStore";
+import { COMMAND_PROCESSED_EVENT } from "../../events/CommandProcessed";
 import type { ILLMGateway, LLMMessage, LLMToolCall, LLMToolDefinition } from "../../ports/ILLMGateway";
+import type { IEventBus } from "../../ports/IEventBus";
 import type { IMessageRepository } from "../../ports/IMessageRepository";
 import type { ISkillRegistry } from "../../ports/ISkillRegistry";
 import type { ITaskRepository } from "../../ports/ITaskRepository";
@@ -84,6 +86,7 @@ export class ProcessCommandUseCase {
     taskRepository: ITaskRepository,
     agentRepository: IAgentRepository,
     asgardRoot: string,
+    private readonly eventBus?: IEventBus,
   ) {
     this.contextBuilder = new ContextBuilder(
       asgardRoot,
@@ -104,13 +107,13 @@ export class ProcessCommandUseCase {
           system: await this.contextBuilder.build(),
           tools: ODIN_TOOLS,
         });
-        return this.handleLLMResponse(response, messages);
+        return this.finalizeCommand(content, await this.handleLLMResponse(response, messages));
       } catch {
-        return this.executeRegexFallback(conversation, messages);
+        return this.finalizeCommand(content, await this.executeRegexFallback(conversation, messages));
       }
     }
 
-    return this.executeRegexFallback(conversation, messages);
+    return this.finalizeCommand(content, await this.executeRegexFallback(conversation, messages));
   }
 
   private requestApproval(skill: string, args: string, description: string, messages: CommandResult["messages"]): CommandResult {
@@ -249,6 +252,25 @@ export class ProcessCommandUseCase {
     }
 
     return { messages };
+  }
+
+  private finalizeCommand(command: string, result: CommandResult): CommandResult {
+    const lastSkill = [...result.messages]
+      .reverse()
+      .find((message) => message.metadata?.skill)
+      ?.metadata?.skill ?? "";
+
+    this.eventBus?.publish({
+      type: COMMAND_PROCESSED_EVENT,
+      timestamp: Date.now(),
+      payload: {
+        command,
+        skill: lastSkill,
+        result,
+      },
+    });
+
+    return result;
   }
 
   private toLLMMessages(): LLMMessage[] {

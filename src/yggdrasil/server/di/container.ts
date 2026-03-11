@@ -16,6 +16,7 @@ import { ChildProcessGateway } from "../adapters/gateways/ChildProcessGateway";
 import { ClaudeLLMGateway } from "../adapters/gateways/ClaudeLLMGateway";
 import { RegexFallbackGateway } from "../adapters/gateways/RegexFallbackGateway";
 import { FileAgentRepository } from "../adapters/repositories/FileAgentRepository";
+import { InProcessEventBus } from "../adapters/events/InProcessEventBus";
 import { FileMessageRepository } from "../adapters/repositories/FileMessageRepository";
 import { FileTaskRepository } from "../adapters/repositories/FileTaskRepository";
 import { FileSkillRegistry } from "../adapters/skills/FileSkillRegistry";
@@ -26,6 +27,7 @@ import { StartAgentUseCase } from "../core/use-cases/agent/StartAgentUseCase";
 import { StopAgentUseCase } from "../core/use-cases/agent/StopAgentUseCase";
 import { ProcessApprovalUseCase } from "../core/use-cases/odin/ProcessApprovalUseCase";
 import { ProcessCommandUseCase } from "../core/use-cases/odin/ProcessCommandUseCase";
+import type { IEventBus } from "../core/ports/IEventBus";
 import { CreateTaskUseCase } from "../core/use-cases/task/CreateTaskUseCase";
 import { DeleteTaskUseCase } from "../core/use-cases/task/DeleteTaskUseCase";
 import { GetTaskUseCase } from "../core/use-cases/task/GetTaskUseCase";
@@ -42,6 +44,7 @@ export interface Container {
   llmGateway: ILLMGateway;
   regexFallbackGateway: ILLMGateway;
   processRegistry: IAgentProcessRegistry;
+  eventBus: IEventBus;
   startAgentUseCase: StartAgentUseCase;
   stopAgentUseCase: StopAgentUseCase;
   getAgentStatusUseCase: GetAgentStatusUseCase;
@@ -63,18 +66,19 @@ export interface Container {
 
 export function createContainer(asgardRoot: string): Container {
   const processRegistry = new AgentProcessRegistry();
+  const eventBus = new InProcessEventBus();
   const taskRepository = new FileTaskRepository(asgardRoot);
   const processGateway = new ChildProcessGateway(asgardRoot);
   const agentRepository = new FileAgentRepository(asgardRoot, () => processRegistry.snapshot());
   const messageRepository = new FileMessageRepository(asgardRoot);
   const approvalStore = new InMemoryApprovalStore();
-  const startAgentUseCase = new StartAgentUseCase(taskRepository, agentRepository, processGateway, processRegistry);
-  const stopAgentUseCase = new StopAgentUseCase(agentRepository, processGateway, processRegistry);
+  const startAgentUseCase = new StartAgentUseCase(taskRepository, agentRepository, processGateway, processRegistry, eventBus);
+  const stopAgentUseCase = new StopAgentUseCase(agentRepository, processGateway, processRegistry, eventBus);
   const getAgentStatusUseCase = new GetAgentStatusUseCase(agentRepository, taskRepository);
-  const createTaskUseCase = new CreateTaskUseCase(taskRepository);
+  const createTaskUseCase = new CreateTaskUseCase(taskRepository, eventBus);
   const listTasksUseCase = new ListTasksUseCase(taskRepository);
   const getTaskUseCase = new GetTaskUseCase(taskRepository);
-  const updateTaskStatusUseCase = new UpdateTaskStatusUseCase(taskRepository);
+  const updateTaskStatusUseCase = new UpdateTaskStatusUseCase(taskRepository, eventBus);
   const deleteTaskUseCase = new DeleteTaskUseCase(taskRepository);
   const skillRegistry = new FileSkillRegistry(
     asgardRoot,
@@ -94,6 +98,7 @@ export function createContainer(asgardRoot: string): Container {
     taskRepository,
     agentRepository,
     asgardRoot,
+    eventBus,
   );
   const processApprovalUseCase = new ProcessApprovalUseCase(messageRepository, skillRegistry, approvalStore);
   const agentController = new AgentController(getAgentStatusUseCase, startAgentUseCase, stopAgentUseCase);
@@ -113,6 +118,7 @@ export function createContainer(asgardRoot: string): Container {
     llmGateway,
     regexFallbackGateway,
     processRegistry,
+    eventBus,
     startAgentUseCase,
     stopAgentUseCase,
     getAgentStatusUseCase,

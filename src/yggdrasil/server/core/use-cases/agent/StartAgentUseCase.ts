@@ -1,8 +1,10 @@
 import { AGENT_MODES, type AgentName } from "../../entities/Agent";
 import type { IAgentRepository } from "../../ports/IAgentRepository";
+import type { IEventBus } from "../../ports/IEventBus";
 import type { IAgentProcessRegistry } from "../../ports/IAgentProcessRegistry";
 import type { IProcessGateway } from "../../ports/IProcessGateway";
 import type { ITaskRepository } from "../../ports/ITaskRepository";
+import { AGENT_STARTED_EVENT } from "../../events/AgentStarted";
 
 const DANGEROUS_MODES = new Set(["ragnarok"]);
 
@@ -26,6 +28,7 @@ export class StartAgentUseCase {
     private readonly agentRepository: IAgentRepository,
     private readonly processGateway: IProcessGateway,
     private readonly processRegistry: IAgentProcessRegistry,
+    private readonly eventBus?: IEventBus,
   ) {}
 
   async execute(input: StartAgentInput): Promise<StartAgentResult> {
@@ -76,6 +79,16 @@ export class StartAgentUseCase {
       });
       await new Promise((resolve) => setTimeout(resolve, 500));
       const pid = (await this.agentRepository.readPid(input.agentName)) ?? child.pid ?? undefined;
+      this.eventBus?.publish({
+        type: AGENT_STARTED_EVENT,
+        timestamp: Date.now(),
+        payload: {
+          agent: input.agentName,
+          tp: task.id,
+          mode: modeResult.mode,
+          pid: pid ?? null,
+        },
+      });
       return { success: true, message: `${input.agentName} started on ${task.id} [${modeResult.mode}]`, pid, mode: modeResult.mode };
     } catch (err) {
       return { success: false, message: `Failed to start ${input.agentName}: ${err instanceof Error ? err.message : "Unknown error"}` };
