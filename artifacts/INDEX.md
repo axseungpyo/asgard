@@ -6,7 +6,7 @@ Last updated: 2026-03-11
 
 | ID | Title | Agent | Status | Created | Updated |
 |----|-------|-------|--------|---------|---------|
-| TP-016 | 타입 경계 수정 — shared/types.ts 분리 | codex | draft | 2026-03-11 | 2026-03-11 |
+| TP-016 | 타입 경계 수정 — shared/types.ts 분리 | codex | review-needed | 2026-03-11 | 2026-03-11 |
 
 ## Completed Tasks
 

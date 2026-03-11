@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { getAgentStates } from "../agents";
-import type { Task } from "../../dashboard/lib/types";
+import type { Task } from "../../shared/types";
 
 vi.mock("fs/promises", () => ({
   default: {

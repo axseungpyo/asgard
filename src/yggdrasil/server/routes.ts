@@ -40,8 +40,8 @@ import {
   updateMcpServer,
   syncToClaudeSettings,
 } from "./mcp-manager";
-import type { AgentName, TaskStatus } from "../dashboard/lib/types";
-import { AGENT_NAMES } from "../dashboard/lib/constants";
+import type { AgentName, TaskStatus } from "../shared/types";
+import { AGENT_NAMES } from "../shared/constants";
 
 const ALLOWED_SKILLS = ["status", "validate"] as const;
 type AllowedSkill = (typeof ALLOWED_SKILLS)[number];

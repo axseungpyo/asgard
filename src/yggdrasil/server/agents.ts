@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
-import type { AgentName, AgentState, AgentStatus, Task } from "../dashboard/lib/types";
-import { AGENT_CONFIG, AGENT_NAMES } from "../dashboard/lib/constants";
+import type { AgentName, AgentState, AgentStatus, Task } from "../shared/types";
+import { AGENT_CONFIG, AGENT_NAMES } from "../shared/constants";
 import { createLogger } from "./logger";
 import { getRunningAgents } from "./control";
 

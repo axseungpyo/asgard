@@ -4,7 +4,7 @@ import path from "path";
 import chokidar from "chokidar";
 import { parseIndex } from "./parser";
 import { getAgentStates } from "./agents";
-import type { AgentName, LogEntry } from "../dashboard/lib/types";
+import type { AgentName, LogEntry } from "../shared/types";
 import { createLogger } from "./logger";
 
 const TAIL_INITIAL_LINES = 500;

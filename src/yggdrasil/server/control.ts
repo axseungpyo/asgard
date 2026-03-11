@@ -1,7 +1,7 @@
 import { spawn, type ChildProcess } from "child_process";
 import fs from "fs/promises";
 import path from "path";
-import type { AgentName } from "../dashboard/lib/types";
+import type { AgentName } from "../shared/types";
 import { createLogger } from "./logger";
 
 const log = createLogger({ component: "AgentControl" });

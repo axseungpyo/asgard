@@ -1,5 +1,5 @@
 import fs from "fs/promises";
-import type { Task, TaskStatus } from "../dashboard/lib/types";
+import type { Task, TaskStatus } from "../shared/types";
 import { createLogger } from "./logger";
 
 const log = createLogger({ component: "Parser" });

@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 import { parseIndex } from "./parser";
 import { createLogger } from "./logger";
-import type { Task, TaskStatus } from "../dashboard/lib/types";
+import type { Task, TaskStatus } from "../shared/types";
 
 const log = createLogger({ component: "TaskManager" });
 
