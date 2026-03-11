@@ -22,8 +22,8 @@ async function main() {
   const container = createContainer(ASGARD_ROOT);
   const odinChannel = createOdinChannel({
     messageRepository: container.messageRepository,
-    skillRegistry: container.skillRegistry,
-    approvalStore: container.approvalStore,
+    processCommandUseCase: container.processCommandUseCase,
+    processApprovalUseCase: container.processApprovalUseCase,
   });
 
   const app = express();

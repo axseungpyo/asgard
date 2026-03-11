@@ -1,19 +1,20 @@
 import fs from "fs/promises";
 import path from "path";
 import type { IAgentRepository } from "../../core/ports/IAgentRepository";
-import type { IProcessGateway } from "../../core/ports/IProcessGateway";
 import type { ISkillRegistry } from "../../core/ports/ISkillRegistry";
 import type { ITaskRepository } from "../../core/ports/ITaskRepository";
 import { SKILL_PATTERNS, type SkillDefinition, type SkillMatch } from "../../core/entities/Skill";
-import { startAgent, stopAgent } from "../../domain/agents/agent-control";
+import { StartAgentUseCase } from "../../core/use-cases/agent/StartAgentUseCase";
+import { StopAgentUseCase } from "../../core/use-cases/agent/StopAgentUseCase";
 import { buildDependencyGraph, detectCycle, getExecutionOrder, parseDependencies, type TPMeta } from "../../infra/dependency";
 
 export class FileSkillRegistry implements ISkillRegistry {
   constructor(
     private readonly asgardRoot: string,
+    private readonly startAgentUseCase: StartAgentUseCase,
+    private readonly stopAgentUseCase: StopAgentUseCase,
     private readonly taskRepository: ITaskRepository,
     private readonly agentRepository: IAgentRepository,
-    private readonly processGateway: IProcessGateway,
   ) {}
 
   match(message: string): SkillMatch | null {
@@ -58,7 +59,7 @@ export class FileSkillRegistry implements ISkillRegistry {
     if (skill === "stop-agent") {
       if (!args) return "에이전트 이름이 필요합니다. 예: `Brokkr 중지`";
       const agentName = args.toLowerCase() as "brokkr" | "heimdall" | "loki";
-      const result = await stopAgent(this.agentRepository, this.processGateway, agentName);
+      const result = await this.stopAgentUseCase.execute({ agentName });
       return result.success
         ? `**${agentName} 중지됨**\n\n${result.message}`
         : `중지 실패: ${result.message}`;
@@ -66,7 +67,7 @@ export class FileSkillRegistry implements ISkillRegistry {
 
     if (skill === "delegate") {
       if (!args) return "TP ID가 필요합니다. 예: `TP-016 위임`";
-      const result = await startAgent(this.taskRepository, this.agentRepository, this.processGateway, "brokkr", { tp: args });
+      const result = await this.startAgentUseCase.execute({ agentName: "brokkr", tp: args });
       if (!result.success) {
         return `Brokkr 시작 실패: ${result.message}`;
       }
@@ -75,7 +76,7 @@ export class FileSkillRegistry implements ISkillRegistry {
 
     if (skill === "delegate-gemini") {
       if (!args) return "TP ID가 필요합니다. 예: `TP-016 Heimdall 위임`";
-      const result = await startAgent(this.taskRepository, this.agentRepository, this.processGateway, "heimdall", { tp: args });
+      const result = await this.startAgentUseCase.execute({ agentName: "heimdall", tp: args });
       if (!result.success) {
         return `Heimdall 시작 실패: ${result.message}`;
       }
