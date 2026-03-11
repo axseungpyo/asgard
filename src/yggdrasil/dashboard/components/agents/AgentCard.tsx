@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import type { AgentState, AgentName } from "../lib/types";
-import { AGENT_CONFIG, STATUS_CONFIG, AGENT_MODE_CONFIG } from "../lib/constants";
-import { authFetch } from "../lib/auth";
+import type { AgentState, AgentName } from "../../lib/types";
+import { AGENT_CONFIG, STATUS_CONFIG, AGENT_MODE_CONFIG } from "../../lib/constants";
+import { authFetch } from "../../lib/auth";
 
 interface AgentCardProps {
   agent: AgentState;

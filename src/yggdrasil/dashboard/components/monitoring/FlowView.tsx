@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import type { Task } from "../lib/types";
-import { AGENT_CONFIG, TASK_STATUS_CONFIG } from "../lib/constants";
+import type { Task } from "../../lib/types";
+import { AGENT_CONFIG, TASK_STATUS_CONFIG } from "../../lib/constants";
 
 interface FlowViewProps {
   tasks: Task[];

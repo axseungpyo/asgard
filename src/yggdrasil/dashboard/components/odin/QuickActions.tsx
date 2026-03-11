@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { authFetch } from "../lib/auth";
+import { authFetch } from "../../lib/auth";
 
 interface ActionResult {
   error?: string;

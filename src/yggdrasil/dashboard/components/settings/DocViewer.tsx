@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { authFetch } from "../lib/auth";
+import { authFetch } from "../../lib/auth";
 
 interface DocViewerProps {
   type: "tp" | "rp";

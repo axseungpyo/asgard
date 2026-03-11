@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import type { MetricsResponse, Task } from "../lib/types";
-import { AGENT_CONFIG, TASK_STATUS_CONFIG } from "../lib/constants";
+import type { MetricsResponse, Task } from "../../lib/types";
+import { AGENT_CONFIG, TASK_STATUS_CONFIG } from "../../lib/constants";
 import MetricsPanel from "./MetricsPanel";
 
 interface StatsPanelProps {

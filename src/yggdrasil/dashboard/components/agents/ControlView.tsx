@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import type { AgentState, Task, LogEntry } from "../lib/types";
-import { AGENT_CONFIG, STATUS_CONFIG, TASK_STATUS_CONFIG, AGENT_MODE_CONFIG } from "../lib/constants";
-import { authFetch } from "../lib/auth";
+import type { AgentState, Task, LogEntry } from "../../lib/types";
+import { AGENT_CONFIG, STATUS_CONFIG, TASK_STATUS_CONFIG, AGENT_MODE_CONFIG } from "../../lib/constants";
+import { authFetch } from "../../lib/auth";
 
 interface ControlViewProps {
   agents: AgentState[];

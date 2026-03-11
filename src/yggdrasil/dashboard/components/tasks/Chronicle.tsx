@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import type { Task, TaskStatus } from "../lib/types";
-import { TASK_STATUS_CONFIG, AGENT_CONFIG } from "../lib/constants";
+import type { Task, TaskStatus } from "../../lib/types";
+import { TASK_STATUS_CONFIG, AGENT_CONFIG } from "../../lib/constants";
 
 interface ChronicleProps {
   tasks: Task[];

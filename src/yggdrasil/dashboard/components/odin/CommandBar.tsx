@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import type { OdinMessage, OdinAction } from "../lib/types";
-import { authFetch } from "../lib/auth";
+import type { OdinMessage, OdinAction } from "../../lib/types";
+import { authFetch } from "../../lib/auth";
 
 interface CommandBarProps {
   isConnected: boolean;

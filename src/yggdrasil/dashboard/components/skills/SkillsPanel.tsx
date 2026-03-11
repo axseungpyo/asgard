@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { authFetch } from "../lib/auth";
-import { AGENT_CONFIG } from "../lib/constants";
+import { authFetch } from "../../lib/auth";
+import { AGENT_CONFIG } from "../../lib/constants";
 import McpPanel from "./McpPanel";
 
 type Category = "all" | "planning" | "dispatch" | "intel" | "system";

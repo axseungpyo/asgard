@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import type { DependencyGraphNode, DependencyGraphResponse } from "../lib/types";
+import type { DependencyGraphNode, DependencyGraphResponse } from "../../lib/types";
 
 interface DependencyViewProps {
   graph: DependencyGraphResponse | null;

@@ -1,8 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
-import type { MetricsResponse } from "../lib/types";
-import { AGENT_CONFIG } from "../lib/constants";
+import type { MetricsResponse } from "../../lib/types";
+import { AGENT_CONFIG } from "../../lib/constants";
 
 interface MetricsPanelProps {
   metrics: MetricsResponse | null;

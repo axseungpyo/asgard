@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getStoredTheme, applyTheme, type ThemeMode } from "../lib/theme";
+import { getStoredTheme, applyTheme, type ThemeMode } from "../../lib/theme";
 
 // ── Constants ──
 

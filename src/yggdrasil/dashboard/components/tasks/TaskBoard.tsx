@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import type { Task, TaskStatus } from "../lib/types";
-import { TASK_STATUS_CONFIG } from "../lib/constants";
-import { authFetch } from "../lib/auth";
+import type { Task, TaskStatus } from "../../lib/types";
+import { TASK_STATUS_CONFIG } from "../../lib/constants";
+import { authFetch } from "../../lib/auth";
 import TaskEditor from "./TaskEditor";
 
 interface TaskBoardProps {
