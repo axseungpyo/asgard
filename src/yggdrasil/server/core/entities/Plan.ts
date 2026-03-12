@@ -8,6 +8,8 @@ export interface PlanStep {
   description: string;
   input: Record<string, unknown>;
   dependsOn?: number[];
+  contextFrom?: number[];
+  contextData?: string;
   parallel?: boolean;
   requiresApproval: boolean;
   status: StepStatus;

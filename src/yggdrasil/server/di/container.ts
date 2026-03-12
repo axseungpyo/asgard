@@ -38,6 +38,7 @@ import { ProcessApprovalUseCase } from "../core/use-cases/odin/ProcessApprovalUs
 import { ProcessCommandUseCase } from "../core/use-cases/odin/ProcessCommandUseCase";
 import type { IEventBus } from "../core/ports/IEventBus";
 import type { ISettingsRepository } from "../core/ports/ISettingsRepository";
+import { ContextService } from "../core/use-cases/plan/ContextService";
 import { PlannerUseCase } from "../core/use-cases/plan/PlannerUseCase";
 import { CreateTaskUseCase } from "../core/use-cases/task/CreateTaskUseCase";
 import { DeleteTaskUseCase } from "../core/use-cases/task/DeleteTaskUseCase";
@@ -112,6 +113,7 @@ export function createContainer(asgardRoot: string): Container {
   const skillToolExecutor = new SkillToolExecutor(skillRegistry);
   const toolExecutors: IToolExecutor[] = [fileSystemToolExecutor, skillToolExecutor];
   const planRepository = new InMemoryPlanRepository();
+  const contextService = new ContextService(nodeFileSystem, asgardRoot);
   const plannerUseCase = new PlannerUseCase(
     planRepository,
     toolExecutors,
@@ -120,6 +122,7 @@ export function createContainer(asgardRoot: string): Container {
     eventBus,
     settingsRepository,
     asgardRoot,
+    contextService,
   );
   const plannerToolExecutor = new PlannerToolExecutor(plannerUseCase);
   toolExecutors.push(plannerToolExecutor);

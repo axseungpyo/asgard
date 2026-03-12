@@ -1,4 +1,5 @@
 import type { ExecutionPlan, PlanStep } from "../../entities/Plan";
+import { CONTEXT_SHARED_EVENT, type ContextSharedPayload } from "../../events/ContextShared";
 import { PLAN_PROGRESS_EVENT, type PlanProgressPayload } from "../../events/PlanProgress";
 import type { IApprovalStore } from "../../ports/IApprovalStore";
 import type { IEventBus } from "../../ports/IEventBus";
@@ -6,6 +7,7 @@ import type { IMessageRepository } from "../../ports/IMessageRepository";
 import type { IPlanRepository } from "../../ports/IPlanRepository";
 import type { ISettingsRepository } from "../../ports/ISettingsRepository";
 import type { IToolExecutor } from "../../ports/IToolExecutor";
+import { ContextService } from "./ContextService";
 
 export class PlannerUseCase {
   private toolExecutors: IToolExecutor[];
@@ -18,6 +20,7 @@ export class PlannerUseCase {
     private readonly eventBus: IEventBus,
     private readonly settingsRepository: ISettingsRepository,
     private readonly projectRoot: string,
+    private readonly contextService: ContextService,
   ) {
     this.toolExecutors = toolExecutors;
   }
@@ -34,19 +37,23 @@ export class PlannerUseCase {
       steps: steps.map((step, index) => ({
         order: index + 1,
         action: step.action,
-        description: step.description,
-        input: step.input,
-        dependsOn: step.dependsOn,
-        parallel: step.parallel,
-        requiresApproval: this.shouldRequireApproval({
-          order: step.order ?? index + 1,
-          action: step.action,
           description: step.description,
           input: step.input,
           dependsOn: step.dependsOn,
+          contextFrom: step.contextFrom,
+          contextData: step.contextData,
           parallel: step.parallel,
-          requiresApproval: step.requiresApproval ?? false,
-          status: step.status ?? "pending",
+          requiresApproval: this.shouldRequireApproval({
+            order: step.order ?? index + 1,
+            action: step.action,
+            description: step.description,
+            input: step.input,
+            dependsOn: step.dependsOn,
+            contextFrom: step.contextFrom,
+            contextData: step.contextData,
+            parallel: step.parallel,
+            requiresApproval: step.requiresApproval ?? false,
+            status: step.status ?? "pending",
         }),
         status: "pending",
       })),
@@ -190,7 +197,7 @@ export class PlannerUseCase {
         return false;
       }
 
-      const result = await executor.execute({ name: step.action, input: step.input }, this.projectRoot);
+      const result = await this.executeStep(plan, step, executor);
       if (result.success) {
         step.status = "completed";
         step.result = result.output;
@@ -219,6 +226,44 @@ export class PlannerUseCase {
     plan.status = "failed";
     this.touch(plan);
     return false;
+  }
+
+  private async executeStep(plan: ExecutionPlan, step: PlanStep, executor: IToolExecutor) {
+    await this.injectContext(plan, step);
+    return executor.execute({ name: step.action, input: step.input }, this.projectRoot);
+  }
+
+  private async injectContext(plan: ExecutionPlan, step: PlanStep): Promise<void> {
+    if (!step.contextFrom?.length || step.contextData) {
+      return;
+    }
+
+    const contexts: string[] = [];
+
+    for (const fromOrder of step.contextFrom) {
+      const fromStep = plan.steps.find((candidate) => candidate.order === fromOrder);
+      if (!fromStep || fromStep.status !== "completed") {
+        continue;
+      }
+
+      const context = await this.contextService.extractContext(fromStep);
+      if (!context) {
+        continue;
+      }
+
+      contexts.push(`[Step ${fromOrder} 결과]\n${context}`);
+      this.publishContextShared(plan, fromStep, step, context);
+    }
+
+    if (contexts.length === 0) {
+      return;
+    }
+
+    step.contextData = contexts.join("\n\n---\n\n");
+    step.input = {
+      ...step.input,
+      previousContext: step.contextData,
+    };
   }
 
   private hasUnmetDependencies(plan: ExecutionPlan, step: PlanStep): boolean {
@@ -252,6 +297,30 @@ export class PlannerUseCase {
       timestamp,
       payload,
     });
+  }
+
+  private publishContextShared(plan: ExecutionPlan, fromStep: PlanStep, toStep: PlanStep, context: string): void {
+    const timestamp = Date.now();
+    const payload: ContextSharedPayload = {
+      fromStep: fromStep.order,
+      toStep: toStep.order,
+      fromAgent: this.resolveAgentName(fromStep),
+      toAgent: this.resolveAgentName(toStep),
+      contextSummary: context.slice(0, 200),
+      planId: plan.id,
+      timestamp,
+    };
+
+    this.eventBus.publish({
+      type: CONTEXT_SHARED_EVENT,
+      timestamp,
+      payload,
+    });
+  }
+
+  private resolveAgentName(step: PlanStep): string {
+    const agent = step.input.agent;
+    return typeof agent === "string" && agent.trim() ? agent : "unknown";
   }
 
   private touch(plan: ExecutionPlan): void {
