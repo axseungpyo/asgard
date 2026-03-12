@@ -56,7 +56,8 @@ describe("FileSystemToolExecutor", () => {
     );
 
     expect(result.success).toBe(true);
-    await expect(fs.readFile(path.join(rootDir, "notes", "output.txt"), "utf-8")).resolves.toBe("hello asgard");
+    expect(result.requiresApproval).toBe(true);
+    await expect(fs.access(path.join(rootDir, "notes", "output.txt"))).rejects.toBeDefined();
   });
 
   it("lists directory contents", async () => {

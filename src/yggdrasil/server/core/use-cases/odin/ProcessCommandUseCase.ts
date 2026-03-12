@@ -240,6 +240,24 @@ export class ProcessCommandUseCase {
     const executor = this.toolExecutors.find((entry) => entry.canHandle(toolCall.name));
     if (executor) {
       const result = await executor.execute(toolCall, this.projectRoot);
+      if (result.requiresApproval) {
+        const approvalId = `tool-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        this.approvalStore.set(approvalId, {
+          skill: `tool:${toolCall.name}`,
+          args: JSON.stringify(toolCall.input),
+        });
+        messages.push(this.messageRepository.addMessage({
+          role: "odin",
+          type: "approval_request",
+          content: result.approvalDescription || "Tool 실행 승인이 필요합니다.",
+          actions: [
+            { id: approvalId, label: "Approve", type: "approve" },
+            { id: `${approvalId}-reject`, label: "Cancel", type: "reject" },
+          ],
+          metadata: { tool: toolCall.name },
+        }));
+        return;
+      }
       messages.push(this.messageRepository.addMessage({
         role: "odin",
         type: "response",

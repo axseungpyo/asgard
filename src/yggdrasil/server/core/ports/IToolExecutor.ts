@@ -4,6 +4,8 @@ export interface ToolResult {
   success: boolean;
   output: string;
   error?: string;
+  requiresApproval?: boolean;
+  approvalDescription?: string;
   metadata?: {
     skill?: string;
   };
@@ -12,4 +14,5 @@ export interface ToolResult {
 export interface IToolExecutor {
   canHandle(toolName: string): boolean;
   execute(toolCall: LLMToolCall, projectRoot: string): Promise<ToolResult>;
+  executeApproved?(toolCall: LLMToolCall, projectRoot: string): Promise<ToolResult>;
 }

@@ -95,7 +95,7 @@ export function createContainer(asgardRoot: string): Container {
   const llmGateway = new ClaudeLLMGateway(asgardRoot);
   const regexFallbackGateway = new RegexFallbackGateway(skillRegistry);
   const nodeFileSystem = new NodeFileSystem();
-  const fileSystemToolExecutor = new FileSystemToolExecutor(nodeFileSystem, asgardRoot);
+  const fileSystemToolExecutor = new FileSystemToolExecutor(nodeFileSystem, asgardRoot, eventBus);
   const skillToolExecutor = new SkillToolExecutor(skillRegistry);
   const toolExecutors: IToolExecutor[] = [fileSystemToolExecutor, skillToolExecutor];
   const processCommandUseCase = new ProcessCommandUseCase(
@@ -110,7 +110,13 @@ export function createContainer(asgardRoot: string): Container {
     asgardRoot,
     eventBus,
   );
-  const processApprovalUseCase = new ProcessApprovalUseCase(messageRepository, skillRegistry, approvalStore);
+  const processApprovalUseCase = new ProcessApprovalUseCase(
+    messageRepository,
+    skillRegistry,
+    approvalStore,
+    toolExecutors,
+    asgardRoot,
+  );
   const agentController = new AgentController(getAgentStatusUseCase, startAgentUseCase, stopAgentUseCase);
   const taskController = new TaskController(listTasksUseCase, getTaskUseCase, createTaskUseCase, updateTaskStatusUseCase, deleteTaskUseCase);
   const odinController = new OdinController(messageRepository, processCommandUseCase, processApprovalUseCase);

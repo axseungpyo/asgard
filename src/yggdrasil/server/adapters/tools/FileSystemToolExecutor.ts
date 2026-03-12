@@ -1,18 +1,24 @@
 import fs from "fs/promises";
 import path from "path";
+import type { DomainEvent } from "../../core/events/DomainEvent";
+import { TOOL_EXECUTED_EVENT, type ToolExecutedPayload } from "../../core/events/ToolExecuted";
+import type { IEventBus } from "../../core/ports/IEventBus";
 import type { IFileSystem, SearchResult } from "../../core/ports/IFileSystem";
 import type { IToolExecutor, ToolResult } from "../../core/ports/IToolExecutor";
 import type { LLMToolCall } from "../../core/ports/ILLMGateway";
 
 const HANDLED_TOOLS = new Set(["read_file", "write_file", "list_directory", "search_codebase", "review_saga"]);
-const BLOCKED_SEGMENTS = new Set(["node_modules", ".git"]);
 const MAX_FILE_CONTENT = 10_000;
 const MAX_SEARCH_RESULTS = 50;
+const MAX_READ_FILE_SIZE_BYTES = 1024 * 1024;
+const DEFAULT_BLOCKED_PATHS = [".env", "node_modules", ".git"];
 
 export class FileSystemToolExecutor implements IToolExecutor {
   constructor(
     private readonly fileSystem: IFileSystem,
     private readonly projectRoot: string,
+    private readonly eventBus?: IEventBus,
+    private readonly blockedPaths: string[] = DEFAULT_BLOCKED_PATHS,
   ) {}
 
   canHandle(toolName: string): boolean {
@@ -20,32 +26,64 @@ export class FileSystemToolExecutor implements IToolExecutor {
   }
 
   async execute(toolCall: LLMToolCall, projectRoot: string): Promise<ToolResult> {
+    const startedAt = Date.now();
     try {
-      switch (toolCall.name) {
-        case "read_file":
-          return await this.readFile(toolCall.input, projectRoot);
-        case "write_file":
-          return await this.writeFile(toolCall.input, projectRoot);
-        case "list_directory":
-          return await this.listDirectory(toolCall.input, projectRoot);
-        case "search_codebase":
-          return await this.searchCodebase(toolCall.input, projectRoot);
-        case "review_saga":
-          return await this.reviewSaga(toolCall.input, projectRoot);
-        default:
-          return { success: false, output: "", error: `지원하지 않는 도구: ${toolCall.name}` };
-      }
+      const result = await this.executeInternal(toolCall, projectRoot, false);
+      this.publishToolExecuted(toolCall, result, startedAt);
+      return result;
     } catch (error) {
-      return {
+      const result = {
         success: false,
         output: "",
         error: error instanceof Error ? error.message : "Unknown error",
       };
+      this.publishToolExecuted(toolCall, result, startedAt);
+      return result;
+    }
+  }
+
+  async executeApproved(toolCall: LLMToolCall, projectRoot: string): Promise<ToolResult> {
+    const startedAt = Date.now();
+    try {
+      const result = await this.executeInternal(toolCall, projectRoot, true);
+      this.publishToolExecuted(toolCall, result, startedAt);
+      return result;
+    } catch (error) {
+      const result = {
+        success: false,
+        output: "",
+        error: error instanceof Error ? error.message : "Unknown error",
+      };
+      this.publishToolExecuted(toolCall, result, startedAt);
+      return result;
+    }
+  }
+
+  private async executeInternal(toolCall: LLMToolCall, projectRoot: string, approved: boolean): Promise<ToolResult> {
+    switch (toolCall.name) {
+      case "read_file":
+        return await this.readFile(toolCall.input, projectRoot);
+      case "write_file":
+        return approved
+          ? await this.writeFile(toolCall.input, projectRoot)
+          : await this.requestWriteApproval(toolCall.input, projectRoot);
+      case "list_directory":
+        return await this.listDirectory(toolCall.input, projectRoot);
+      case "search_codebase":
+        return await this.searchCodebase(toolCall.input, projectRoot);
+      case "review_saga":
+        return await this.reviewSaga(toolCall.input, projectRoot);
+      default:
+        return { success: false, output: "", error: `지원하지 않는 도구: ${toolCall.name}` };
     }
   }
 
   private async readFile(input: Record<string, unknown>, projectRoot: string): Promise<ToolResult> {
     const absolutePath = await this.validatePath(this.readString(input, "path"), projectRoot);
+    const stats = await fs.stat(absolutePath);
+    if (stats.size > MAX_READ_FILE_SIZE_BYTES) {
+      throw new Error("파일이 1MB를 초과하여 읽을 수 없습니다.");
+    }
     const content = await this.fileSystem.readFile(absolutePath);
     const truncated = content.length > MAX_FILE_CONTENT
       ? `${content.slice(0, MAX_FILE_CONTENT)}\n\n... (truncated)`
@@ -59,6 +97,17 @@ export class FileSystemToolExecutor implements IToolExecutor {
     const content = this.readString(input, "content", false);
     await this.fileSystem.writeFile(absolutePath, content);
     return { success: true, output: `파일 저장 완료: ${path.relative(safeRoot, absolutePath)}` };
+  }
+
+  private async requestWriteApproval(input: Record<string, unknown>, projectRoot: string): Promise<ToolResult> {
+    const safeRoot = await this.resolveProjectRoot(projectRoot);
+    const absolutePath = await this.validatePath(this.readString(input, "path"), projectRoot, true);
+    return {
+      success: true,
+      output: "",
+      requiresApproval: true,
+      approvalDescription: `파일 쓰기 승인 필요: ${path.relative(safeRoot, absolutePath)}`,
+    };
   }
 
   private async listDirectory(input: Record<string, unknown>, projectRoot: string): Promise<ToolResult> {
@@ -166,14 +215,25 @@ export class FileSystemToolExecutor implements IToolExecutor {
 
   private assertNotBlocked(relativePath: string, originalPath: string): void {
     const segments = relativePath.split(path.sep).filter(Boolean);
-    if (segments.some((segment) => BLOCKED_SEGMENTS.has(segment))) {
+    const blockedPath = this.blockedPaths.find((entry) => this.matchesBlockedPath(segments, entry));
+    if (blockedPath) {
       throw new Error(`접근 거부: 보호된 경로 — ${originalPath}`);
+    }
+  }
+
+  private matchesBlockedPath(segments: string[], blockedPath: string): boolean {
+    const normalized = blockedPath.split(/[\\/]+/).filter(Boolean);
+    if (normalized.length === 0) {
+      return false;
     }
 
-    const fileName = segments.at(-1) ?? "";
-    if (fileName === ".env" || fileName.startsWith(".env.")) {
-      throw new Error(`접근 거부: 보호된 경로 — ${originalPath}`);
+    if (normalized.length === 1 && normalized[0] === ".env") {
+      const fileName = segments.at(-1) ?? "";
+      return fileName === ".env" || fileName.startsWith(".env.");
     }
+
+    return normalized.every((segment, index) => segments[index] === segment)
+      || segments.includes(normalized[0]);
   }
 
   private readString(input: Record<string, unknown>, key: string, trim = true): string {
@@ -182,5 +242,30 @@ export class FileSystemToolExecutor implements IToolExecutor {
       return "";
     }
     return trim ? value.trim() : value;
+  }
+
+  private publishToolExecuted(toolCall: LLMToolCall, result: ToolResult, startedAt: number): void {
+    if (!this.eventBus) {
+      return;
+    }
+
+    const timestamp = Date.now();
+    const payload: ToolExecutedPayload = {
+      tool: toolCall.name,
+      input: toolCall.input,
+      success: result.success,
+      output: result.output || undefined,
+      error: result.error,
+      durationMs: timestamp - startedAt,
+      timestamp,
+    };
+
+    const event: DomainEvent<ToolExecutedPayload> = {
+      type: TOOL_EXECUTED_EVENT,
+      timestamp,
+      payload,
+    };
+
+    this.eventBus.publish(event);
   }
 }
